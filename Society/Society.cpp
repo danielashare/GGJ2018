@@ -86,7 +86,7 @@ const uint mArea = mWidth * mHeight;
 #define MAXENTITIES 2
 
 #define FRAMEDELAY      200
-#define FLOAT_TEXT_TIME 1000.0
+#define FLOAT_TEXT_TIME 2000.0
 
 sf::RenderWindow window(sf::VideoMode(wWidth, wHeight), "Society");
 ulong gtime;

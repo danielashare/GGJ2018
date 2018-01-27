@@ -86,8 +86,8 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(protag_rot + 270, dir_X, dir_Y);
         }
-        protag_X += dir_X / 10;
-        protag_Y += dir_Y / 5;
+        protag_X += dir_X;// / 10;
+        protag_Y += dir_Y;// / 5;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 50));
 

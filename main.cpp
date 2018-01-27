@@ -73,7 +73,6 @@ int main ()
     entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
     for(int i = 1; i < 257; i++) {
         entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
-        entity[i] = new Entity(i, 0);
     }
     for(int i = 257; i < 513; i++) {
         entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));
@@ -108,8 +107,8 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(protag_rot + 270, dir_X, dir_Y);
         }
-        protag_X += dir_X / 20;
-        protag_Y += dir_Y / 10;
+        protag_X += dir_X / 10;
+        protag_Y += dir_Y / 5;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, !(game_time % 50));
 

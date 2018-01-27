@@ -178,6 +178,7 @@ void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite vill
     for (uint16_t e = 0; e < number_of_entities; ++e) {
         double x = entity[e]->position_X, y = entity[e]->position_Y;
         if (x > camera_X1 && y > camera_Y1 && x < camera_X2 && y < camera_Y2) {
+setBiome(x, y, 0);
             double draw_X, draw_Y;
             draw_X = (x - camera_X1) * ENTITY_W;
             draw_Y = (y - camera_Y1);

@@ -17,8 +17,8 @@ public:
     while(!found)
     {
       // Get random coordinate to test
-      possible_X = rand() % MAP_W;
-      possible_Y = rand() % MAP_H;
+      possible_X = ri(0, MAP_W - 1);
+      possible_Y = ri(0, MAP_H - 1);
       std::cout << "Trying " << possible_X << ", " << possible_Y << "\n";
       if(getBiome(possible_X,possible_Y) == target_biome)
       {

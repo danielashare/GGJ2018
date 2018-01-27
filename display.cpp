@@ -78,10 +78,9 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
       //Prepare sprite for draw
         uint16_t tex_X, tex_Y;
         getSpriteTex(sprite_code, tex_X, tex_Y);
-std::cout << std::to_string(tex_X) << std::endl;
         //Set sprite Position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
-        spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H));
+        spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
         //Draw sprite
         window.draw(spriteTile);
     }
@@ -106,18 +105,18 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
     float p_Y_D = 1 - p_Y_d;
     float protag_offset_X = ( (p_Y_D * TILE_H) + (p_X_D * (TILE_W/2)) );     //
     float protag_offset_Y = ( (p_Y_D * (TILE_H/2)) + (p_X_d * (TILE_H/2)) ); // Calculate protag decimal offset
-    double draw_X = protag_offset_X, draw_Y = WINDOW_H - (TILE_H * (tiles_Y / 2)) + protag_offset_Y;
-    draw_X -= TILE_W * ((tiles_X/4) + 1);
-    draw_Y -= TILE_H;
+    double draw_X = protag_offset_X, draw_Y = -(TILE_H * (tiles_Y / 2)) + protag_offset_Y;
+    draw_X += TILE_W * (tiles_X/4);
+    draw_Y -= TILE_H*2;
     double start_draw_X = draw_X, start_draw_Y = draw_Y;
   //Start isometric loop
     for (int16_t y = camera_Y1; y < camera_Y2; ++y) {
-      for (int16_t x = camera_X1; x < camera_X2; ++x) {
+      for (int16_t x = camera_X2; x >= camera_X1; --x) {
         //Preapare and call upon the argument drawer function
           (*drawer)(game_time, window, tile, x, y, draw_X, draw_Y);
-        //Move half right and half up
-          draw_X += TILE_W / 2;
-          draw_Y -= TILE_H / 2;
+        //Move half left and half down
+          draw_X -= TILE_W / 2;
+          draw_Y += TILE_H / 2;
       }
     //Move half right and half down
       start_draw_X += (TILE_W / 2);

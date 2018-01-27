@@ -76,12 +76,18 @@ int main ()
         protag_rot = vecToAng((mouse_pos.x - float(WINDOW_W / 2)) / 2, mouse_pos.y - float(WINDOW_H / 2)) + 45;
         normaliseAng(protag_rot);
       //Check keyboard
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag forwards (NW)
-            float dir_X, dir_Y;
+        float dir_X = 0, dir_Y = 0;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag foward (NW)
             angToVec(protag_rot, dir_X, dir_Y);
-            protag_X += dir_X; /// 10;
-            protag_Y += dir_Y; /// 10;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) { //Move protag right (NE)
+            angToVec(protag_rot + 90, dir_X, dir_Y);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { //Move protag backward (SE)
+            angToVec(protag_rot + 180, dir_X, dir_Y);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
+            angToVec(protag_rot + 270, dir_X, dir_Y);
         }
+        protag_X += dir_X / 10;
+        protag_Y += dir_Y / 5;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 50));
 

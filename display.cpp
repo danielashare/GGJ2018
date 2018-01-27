@@ -6,9 +6,10 @@ const uint8_t TILE_W = 64, TILE_H = 32;
 const uint8_t SPRITE_W = 64, SPRITE_H = 64;
 const uint16_t WINDOW_W = 1024, WINDOW_H = 512;
 
-const uint mm_size = WINDOW_W / 8; //Size of minimap on the screen
-const uint mm_diag_width = sqrt(pow(mm_size, 2) + pow(mm_size, 2)); //Width of minimap rotated 45deg
-const uint mm_len = MAP_A * 4;
+const uint16_t mm_size = WINDOW_W / 8; //Size of minimap on the screen
+const uint16_t mm_diag_width = sqrt(pow(mm_size, 2) + pow(mm_size, 2)); //Width of minimap rotated 45deg
+const uint32_t mm_len = MAP_A * 4;
+const uint8_t mm_crosshair = 2; //Half width of crosshair, in tiles
 sf::Uint8* mm = new sf::Uint8[mm_len]; //Pixel data of the minimap
 sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
@@ -142,7 +143,7 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
         uint32_t p = 0; //Pixel pointer
         for (uint16_t y = 0; y < MAP_H; ++y) {
             for (uint16_t x = 0; x < MAP_W; ++x) {
-                if (x >= protag_X - 5 && x <= protag_X + 5 || y >= protag_Y - 5 && y <= protag_Y + 5) {
+                if (x >= protag_X - mm_crosshair && x <= protag_X + mm_crosshair || y >= protag_Y - mm_crosshair && y <= protag_Y + mm_crosshair) {
                     mm[p] = 255;
                     mm[p + 1] = mm[p + 2] = 0;
                     mm[p + 3] = 255;

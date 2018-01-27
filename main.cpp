@@ -23,6 +23,12 @@ int main ()
     sf::Image entityTexImg;
     sf::Texture entityTexture;
     sf::Sprite entityTile;
+    sf::Image villagerTexImg;
+    sf::Texture villagerTexture;
+    sf::Sprite villagerTile;
+    sf::Image zombieTexImg;
+    sf::Texture zombieTexture;
+    sf::Sprite zombieTile;
   //Load textures/fonts
     if (!fnt_arial.loadFromFile("Assets/arial.ttf"))
     {
@@ -34,8 +40,11 @@ int main ()
     if (!spriteTexImg.loadFromFile("Assets/sprites.png")) {
         std::cout << "Couldn't load Assets/sprites.png" << std::endl;
     }
-    if (!entityTexImg.loadFromFile("Assets/entities.png")) {
-        std::cout << "Couldn't load Assets/entities.png" << std::endl;
+    if (!villagerTexImg.loadFromFile("Assets/villager.png")) {
+        std::cout << "Couldn't load Assets/villager.png" << std::endl;
+    }
+    if (!zombieTexImg.loadFromFile("Assets/zombie.png")) {
+        std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
     biomeTexture.loadFromImage(biomeTexImg);
     biomeTile.setTexture(biomeTexture);
@@ -43,9 +52,12 @@ int main ()
     spriteTexture.loadFromImage(spriteTexImg);
     spriteTile.setTexture(spriteTexture);
     spriteTexture.setSmooth(false);
-    entityTexture.loadFromImage(entityTexImg);
-    entityTile.setTexture(entityTexture);
-    entityTexture.setSmooth(false);
+    villagerTexture.loadFromImage(spriteTexImg);
+    villagerTile.setTexture(spriteTexture);
+    villagerTexture.setSmooth(false);
+    zombieTexture.loadFromImage(spriteTexImg);
+    zombieTile.setTexture(spriteTexture);
+    zombieTexture.setSmooth(false);
   //Minimap
     mm_tex.create(MAP_W, MAP_H);
     minimap.scale(float(mm_size) / float(MAP_W), float(mm_size) / float(MAP_H));
@@ -54,6 +66,7 @@ int main ()
     minimap.setPosition(sf::Vector2f(0, mm_diag_width / 2));
     minimap.setRotation(-45);
 
+<<<<<<< HEAD
   //Generate entities
     entity[0] = new Entity(0, "Player");
     std::cout << "Made " << entity[0]->eType << " " << std::to_string(entity[0]->index_in_array) << " at " << entity[0]->position_X << "," << entity[0]->position_Y << "\n";
@@ -68,9 +81,25 @@ int main ()
       std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << " at " << entity[i]->position_X << "," << entity[i]->position_Y << "\n";
     }
 
+=======
+>>>>>>> daf10a4d2fab573a704491c5f8b8b08925aa1488
   //Generate map
     genMap();
 
+  //Generate entities
+    entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
+    for(int i = 1; i < 257; i++) {
+        entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
+    }
+    for(int i = 257; i < 513; i++) {
+        entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));
+    }
+  //Init the entityMap
+    for (uint y = 0; y < MAP_H; ++y) {
+        for (uint x = 0; x < MAP_W; ++x) {
+            entity_map[x][y] = new Entity();
+        }
+    }
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -103,7 +132,7 @@ int main ()
         protag_X += dir_X;// / 10;
         protag_Y += dir_Y;// / 5;
 
-        doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 50));
+        doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, !(game_time % 50));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

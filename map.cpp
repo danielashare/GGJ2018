@@ -7,7 +7,7 @@ const uint16_t MAP_W = 4096, MAP_H = 4096;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 0000 frame, 0000 sprite, 00 biome
 
 //Consonants
-const uint8_t ISLANDS = 10;
+const uint8_t ISLANDS = 1;
 
 void setBiome (uint16_t x, uint16_t y, uint8_t b)
 {

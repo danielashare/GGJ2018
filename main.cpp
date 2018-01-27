@@ -8,7 +8,7 @@
 int main ()
 {
   //Create the window
-    sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "Jammy Dodger");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "Infection");
   //Display rendering loading screen
 
 
@@ -33,9 +33,9 @@ int main ()
     }
     groundTexture.loadFromImage(groundTexImg);
     groundTile.setTexture(groundTexture);
-    groundTexture.setSmooth(true);
-    entityTexture.loadFromImage(groundTexImg);
-    entityTile.setTexture(groundTexture);
+    groundTexture.setSmooth(false);
+    entityTexture.loadFromImage(entityTexImg);
+    entityTile.setTexture(entityTexture);
     entityTexture.setSmooth(true);
 
   //Generate map

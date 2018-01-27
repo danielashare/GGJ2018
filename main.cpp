@@ -73,6 +73,7 @@ int main ()
     entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
     for(int i = 1; i < 257; i++) {
         entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
+        entity[i] = new Entity(i, 0);
     }
     for(int i = 257; i < 513; i++) {
         entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));

@@ -23,6 +23,12 @@ int main ()
     sf::Image entityTexImg;
     sf::Texture entityTexture;
     sf::Sprite entityTile;
+    sf::Image villagerTexImg;
+    sf::Texture villagerTexture;
+    sf::Sprite villagerTile;
+    sf::Image zombieTexImg;
+    sf::Texture zombieTexture;
+    sf::Sprite zombieTile;
   //Load textures/fonts
     if (!fnt_arial.loadFromFile("Assets/arial.ttf"))
     {
@@ -34,8 +40,11 @@ int main ()
     if (!spriteTexImg.loadFromFile("Assets/sprites.png")) {
         std::cout << "Couldn't load Assets/sprites.png" << std::endl;
     }
-    if (!entityTexImg.loadFromFile("Assets/entities.png")) {
-        std::cout << "Couldn't load Assets/entities.png" << std::endl;
+    if (!villagerTexImg.loadFromFile("Assets/villager.png")) {
+        std::cout << "Couldn't load Assets/villager.png" << std::endl;
+    }
+    if (!zombieTexImg.loadFromFile("Assets/zombie.png")) {
+        std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
     biomeTexture.loadFromImage(biomeTexImg);
     biomeTile.setTexture(biomeTexture);
@@ -43,9 +52,12 @@ int main ()
     spriteTexture.loadFromImage(spriteTexImg);
     spriteTile.setTexture(spriteTexture);
     spriteTexture.setSmooth(false);
-    entityTexture.loadFromImage(entityTexImg);
-    entityTile.setTexture(entityTexture);
-    entityTexture.setSmooth(false);
+    villagerTexture.loadFromImage(spriteTexImg);
+    villagerTile.setTexture(spriteTexture);
+    villagerTexture.setSmooth(false);
+    zombieTexture.loadFromImage(spriteTexImg);
+    zombieTile.setTexture(spriteTexture);
+    zombieTexture.setSmooth(false);
   //Minimap
     mm_tex.create(MAP_W, MAP_H);
     minimap.scale(float(mm_size) / float(MAP_W), float(mm_size) / float(MAP_H));
@@ -103,7 +115,7 @@ int main ()
         protag_X += dir_X;// / 10;
         protag_Y += dir_Y;// / 5;
 
-        doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 50));
+        doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, !(game_time % 50));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

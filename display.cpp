@@ -27,9 +27,9 @@ void getBiomeTex (uint8_t m, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex
     tex_X = biome_code * TILE_W;
     tex_Y = 0;
 }
-void getSpriteTex (uint8_t sprite_code, uint16_t &tex_X, uint16_t &tex_Y)
+void getSpriteTex (uint8_t sprite_code, uint16_t mapPtr, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    tex_X = 0;
+    tex_X = getFrame(mapPtr) * SPRITE_W;
     tex_Y = (sprite_code - 1) * SPRITE_H;
 }
 
@@ -89,7 +89,7 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
     if (sprite_code) {
       //Prepare sprite for draw
         uint16_t tex_X, tex_Y;
-        getSpriteTex(sprite_code, tex_X, tex_Y);
+        getSpriteTex(sprite_code, *mapPtr, tex_X, tex_Y);
         //Set sprite Position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
@@ -152,11 +152,14 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
 
   //Lazy actions (per second)
     if (is_lazy) {
-        //Render minimap
-
-        uint32_t p = 0; //Pixel pointer
+        uint32_t p = 0; //Pixel pointer for minimap
         for (uint16_t y = 0; y < MAP_H; ++y) {
             for (uint16_t x = 0; x < MAP_W; ++x) {
+                if (getAnimated(map[x][y])) {
+                    uint8_t frame = getFrame(map[x][y]);
+                    setFrame(x, y, frame + 1);
+                }
+              //Render minimap
                 if (x >= protag_X - mm_crosshair && x <= protag_X + mm_crosshair || y >= protag_Y - mm_crosshair && y <= protag_Y + mm_crosshair) {
                     mm[p] = 255;
                     mm[p + 1] = mm[p + 2] = 0;

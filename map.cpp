@@ -25,16 +25,17 @@ void setSprite (uint16_t x, uint16_t y, uint8_t s) { if (x > 0 && x < MAP_W && y
     map[x][y] = (map[x][y] & 0xFFC3) | (s << 2);
 } }
 uint8_t getFrame (uint16_t m) { return (m & 0x1C0) >> 6; }
-void setFrame (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
-    map[x][y] = (map[x][y] & 0xFE3F) | (i << 6);
+void setFrame (uint16_t x, uint16_t y, uint8_t f) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0xFE3F) | (f << 6);
 } }
 bool getAnimated (uint16_t m) { return (m & 0x200) >> 9; }
-void setAnimated (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
-    map[x][y] = (map[x][y] & 0xFDFF) | (i << 9);
+void setAnimated (uint16_t x, uint16_t y, bool a) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0xFDFF) | (a << 9);
 } }
 uint8_t getLux (uint16_t m) { return (m & 0xC00) >> 10; }
-void setLux (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
-    map[x][y] = (map[x][y] & 0xF3FF) | (i << 10);
+void setLux (uint16_t x, uint16_t y, uint8_t l, bool append = false) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    if (append) { if (getLux(map[x][y]) > l) { return; } }
+    map[x][y] = (map[x][y] & 0xF3FF) | (l << 10);
 } }
 
 void genMap ()
@@ -101,6 +102,9 @@ void genMap ()
   //En-masse
     for (uint16_t y = 1; y < MAP_H - 1; ++y) {
         for (uint16_t x = 1; x < MAP_W - 1; ++x) {
+          //Set animation properties (idk why I even have to do this)
+            setFrame(x, y, 0);
+            setAnimated(x, y, false);
           //Remove all brick walls surrounded by stone biome (where village blobs have overlapped)
             if (getSprite(map[x][y]) == 2 && !getBiome(map[x+1][y]) && !getBiome(map[x-1][y]) && !getBiome(map[x][y+1]) && !getBiome(map[x][y-1])) {
                 setSprite(x, y, 0);
@@ -108,27 +112,28 @@ void genMap ()
           //Add random fireplace and luminosity on stone
             if (!getBiome(map[x][y]) && !getSprite(map[x][y]) && rb(.01)) {
                 setSprite(x, y, 3);
-                setLux(x+0,y+0,3);
-                setLux(x+1,y+0,2);
-                setLux(x+2,y+0,1);
-                setLux(x-1,y+0,2);
-                setLux(x-2,y+0,1);
-                setLux(x+0,y+1,2);
-                setLux(x+1,y+1,2);
-                setLux(x+2,y+1,1);
-                setLux(x-1,y+1,2);
-                setLux(x-2,y+1,1);
-                setLux(x+0,y+2,1);
-                setLux(x+1,y+2,1);
-                setLux(x-1,y+2,1);
-                setLux(x+0,y-1,2);
-                setLux(x+1,y-1,2);
-                setLux(x+2,y-1,1);
-                setLux(x-1,y-1,2);
-                setLux(x-2,y-1,1);
-                setLux(x+0,y-2,1);
-                setLux(x+1,y-2,1);
-                setLux(x-1,y-2,1);
+                setAnimated(x, y, true);
+                setLux(x+0,y+0,3, true);
+                setLux(x+1,y+0,2, true);
+                setLux(x+2,y+0,1, true);
+                setLux(x-1,y+0,2, true);
+                setLux(x-2,y+0,1, true);
+                setLux(x+0,y+1,2, true);
+                setLux(x+1,y+1,2, true);
+                setLux(x+2,y+1,1, true);
+                setLux(x-1,y+1,2, true);
+                setLux(x-2,y+1,1, true);
+                setLux(x+0,y+2,1, true);
+                setLux(x+1,y+2,1, true);
+                setLux(x-1,y+2,1, true);
+                setLux(x+0,y-1,2, true);
+                setLux(x+1,y-1,2, true);
+                setLux(x+2,y-1,1, true);
+                setLux(x-1,y-1,2, true);
+                setLux(x-2,y-1,1, true);
+                setLux(x+0,y-2,1, true);
+                setLux(x+1,y-2,1, true);
+                setLux(x-1,y-2,1, true);
             }
         }
     }

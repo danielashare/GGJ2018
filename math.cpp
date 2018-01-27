@@ -26,10 +26,9 @@ inline float eD_approx (float x1, float y1, float x2, float y2) //Calculate the 
     return sqrt_approx(pow((x2 - x1), 2) + pow((y2 - y1), 2));
 }
 
-uint pi (uint seed, int min, int max) //'Predictable' patterned random uint
+uint pi (uint32_t seed, int32_t min, int32_t max) //'Predictable' patterned random uint
 {
-    seed = (214013 * seed + 2531011);
-    return (((seed >> 16) & 0x7FFF) % (max - min)) + min;
+    return ((((214013 * seed + 2531011) >> 16) & 0x7FFF) % (max - min)) + min;
 }
 
 float pf (uint seed) //'Predictable' patterned random float (doesn't work)

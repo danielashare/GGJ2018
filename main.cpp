@@ -14,9 +14,12 @@ int main ()
 
   //Declare asset thingies
     sf::Font fnt_arial;
-    sf::Image groundTexImg;
-    sf::Texture groundTexture;
-    sf::Sprite groundTile;
+    sf::Image biomeTexImg;
+    sf::Texture biomeTexture;
+    sf::Sprite biomeTile;
+    sf::Image spriteTexImg;
+    sf::Texture spriteTexture;
+    sf::Sprite spriteTile;
     sf::Image entityTexImg;
     sf::Texture entityTexture;
     sf::Sprite entityTile;
@@ -25,18 +28,24 @@ int main ()
     {
       std::cout << "Couldn't load Assets/arial.ttf" << std::endl;
     }
-    if (!groundTexImg.loadFromFile("Assets/biomes.png")) {
+    if (!biomeTexImg.loadFromFile("Assets/biomes.png")) {
         std::cout << "Couldn't load Assets/biomes.png" << std::endl;
+    }
+    if (!spriteTexImg.loadFromFile("Assets/sprites.png")) {
+        std::cout << "Couldn't load Assets/sprites.png" << std::endl;
     }
     if (!entityTexImg.loadFromFile("Assets/entities.png")) {
         std::cout << "Couldn't load Assets/entities.png" << std::endl;
     }
-    groundTexture.loadFromImage(groundTexImg);
-    groundTile.setTexture(groundTexture);
-    groundTexture.setSmooth(false);
+    biomeTexture.loadFromImage(biomeTexImg);
+    biomeTile.setTexture(biomeTexture);
+    biomeTexture.setSmooth(false);
+    spriteTexture.loadFromImage(spriteTexImg);
+    spriteTile.setTexture(spriteTexture);
+    spriteTexture.setSmooth(false);
     entityTexture.loadFromImage(entityTexImg);
     entityTile.setTexture(entityTexture);
-    entityTexture.setSmooth(true);
+    entityTexture.setSmooth(false);
   //Minimap
     mm_tex.create(MAP_W, MAP_H);
     minimap.scale(float(mm_size) / float(MAP_W), float(mm_size) / float(MAP_H));
@@ -74,7 +83,7 @@ int main ()
             protag_Y += dir_Y; /// 10;
         }
 
-        doDISPLAY(game_time, window, groundTexImg, groundTile, !(game_time % 100));
+        doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 100));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

@@ -20,3 +20,4 @@ public:
 const uint16_t MAX_ENTITIES = 512;
 Entity* entity[MAX_ENTITIES];
 uint16_t number_of_entities = 0;
+Entity* entity_map[MAP_W][MAP_H];

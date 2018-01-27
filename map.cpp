@@ -5,7 +5,7 @@
 
 const uint16_t MAP_W = 512, MAP_H = 512;
 const uint32_t MAP_A = MAP_W * MAP_H;
-uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 0000 frame, 0000 sprite, 00 biome
+uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 000 illumination, 0000 frame, 0000 sprite, 00 biome
 
 //Consonants
 const uint8_t GEN_ISLANDS = 16;
@@ -23,6 +23,10 @@ void setBiome (uint16_t x, uint16_t y, uint8_t b) { if (x > 0 && x < MAP_W && y 
 uint8_t getSprite (uint8_t m) { return (m & 0x3C) >> 2; }
 void setSprite (uint16_t x, uint16_t y, uint8_t s) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
     map[x][y] = (map[x][y] & 0xFFC3) | (s << 2);
+} }
+uint8_t getIllumination (uint8_t m) { return (m & 0x1C00) >> 6; }
+void setIllumination (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0x3E3FF) | (i << 6);
 } }
 
 void genMap ()

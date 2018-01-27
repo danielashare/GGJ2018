@@ -14,6 +14,9 @@ sf::Uint8* mm = new sf::Uint8[mm_len]; //Pixel data of the minimap
 sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
 
+const uint16_t daynight_cycle = 1000;
+float daynight_colour (uint32_t game_time) { return (fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1; }
+
 void getBiomeTex (uint8_t m, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex_Y)
 {
     biome_code = getBiome(m);
@@ -62,6 +65,10 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
             b = 200 + fabs( sin(((x * y / 20) + ((float)game_time / 100))) ) * 55;
             break;
     }
+    //Modulate for day/night
+    r *= daynight_colour(game_time);
+    g *= daynight_colour(game_time);
+    b *= daynight_colour(game_time);
     biomeTile.setColor(sf::Color(r, g, b));
     //Modulate if protag pos
     if (x == (int16_t)protag_X && y == (int16_t)protag_Y) {
@@ -82,6 +89,9 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
         //Set sprite Position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
+        //Modulate for day/night
+        uint8_t c = 255 * daynight_colour(game_time);
+        spriteTile.setColor(sf::Color(c, c, c));
         //Draw sprite
         window.draw(spriteTile);
     }
@@ -151,12 +161,20 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
                     uint16_t tex_X, tex_Y;
                     uint16_t *mapPtr = &map[x][y];
                     uint8_t biome_code = getBiome(*mapPtr);
+                    uint8_t sprite_code = getSprite(*mapPtr);
                     sf::Color c;
-                    switch (biome_code) {
-                        case 0: c = sf::Color::Black; break; //Stone
-                        case 1: c = sf::Color::Green; break; //Grass
-                        case 2: c = sf::Color::Yellow; break; //Sand
-                        case 3: c = sf::Color::Blue; break; //Water
+                    if (sprite_code) {
+                        switch (sprite_code) {
+                            case 0: c = sf::Color(128, 84, 0); break; //Crate
+                            case 1: c = sf::Color(0, 0, 0); break; //Brick
+                        }
+                    } else {
+                        switch (biome_code) {
+                            case 0: c = sf::Color(100, 64, 0); break; //Stone
+                            case 1: c = sf::Color(0, 128, 0); break; //Grass
+                            case 2: c = sf::Color::Yellow; break; //Sand
+                            case 3: c = sf::Color::Blue; break; //Water
+                        }
                     }
                     mm[p]     = c.r;
                     mm[p + 1] = c.g;

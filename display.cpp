@@ -14,8 +14,12 @@ sf::Uint8* mm = new sf::Uint8[mm_len]; //Pixel data of the minimap
 sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
 
-const uint16_t daynight_cycle = 1000;
-float daynight_colour (uint32_t game_time) { return (fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1; }
+const uint16_t daynight_cycle = 200;
+float daynight_colour (uint32_t game_time, uint16_t mapPtr) {
+    float lux = getLux(mapPtr);
+    lux = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1) + (lux / 5);
+    return (lux < 1 ? lux : 1);
+}
 
 void getBiomeTex (uint8_t m, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex_Y)
 {
@@ -25,8 +29,8 @@ void getBiomeTex (uint8_t m, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex
 }
 void getSpriteTex (uint8_t sprite_code, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    tex_X = (sprite_code - 1) * TILE_W;
-    tex_Y = 0;
+    tex_X = 0;
+    tex_Y = (sprite_code - 1) * SPRITE_H;
 }
 
 
@@ -66,9 +70,9 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
             break;
     }
     //Modulate for day/night
-    r *= daynight_colour(game_time);
-    g *= daynight_colour(game_time);
-    b *= daynight_colour(game_time);
+    r *= daynight_colour(game_time, *mapPtr);
+    g *= daynight_colour(game_time, *mapPtr);
+    b *= daynight_colour(game_time, *mapPtr);
     biomeTile.setColor(sf::Color(r, g, b));
     //Modulate if protag pos
     if (x == (int16_t)protag_X && y == (int16_t)protag_Y) {
@@ -90,7 +94,7 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
         //Modulate for day/night
-        uint8_t c = 255 * daynight_colour(game_time);
+        uint8_t c = 255 * daynight_colour(game_time, map[x][y]);
         spriteTile.setColor(sf::Color(c, c, c));
         //Draw sprite
         window.draw(spriteTile);

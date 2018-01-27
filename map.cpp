@@ -5,7 +5,7 @@
 
 const uint16_t MAP_W = 512, MAP_H = 512;
 const uint32_t MAP_A = MAP_W * MAP_H;
-uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 000 illumination, 0000 frame, 0000 sprite, 00 biome
+uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
 
 //Consonants
 const uint8_t GEN_ISLANDS = 16;
@@ -16,17 +16,25 @@ const uint8_t GEN_VILLAGES = 32;
 const uint16_t GEN_VILLAGE_RAD_MIN = 16;
 const uint16_t GEN_VILLAGE_RAD_MAX = 32;
 
-uint8_t getBiome (uint8_t m) { return m & 0x03; }
+uint8_t getBiome (uint16_t m) { return m & 0x03; }
 void setBiome (uint16_t x, uint16_t y, uint8_t b) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
     map[x][y] = (map[x][y] & 0xFFFC) | b;
 } }
-uint8_t getSprite (uint8_t m) { return (m & 0x3C) >> 2; }
+uint8_t getSprite (uint16_t m) { return (m & 0x3C) >> 2; }
 void setSprite (uint16_t x, uint16_t y, uint8_t s) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
     map[x][y] = (map[x][y] & 0xFFC3) | (s << 2);
 } }
-uint8_t getIllumination (uint8_t m) { return (m & 0x1C00) >> 6; }
-void setIllumination (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
-    map[x][y] = (map[x][y] & 0x3E3FF) | (i << 6);
+uint8_t getFrame (uint16_t m) { return (m & 0x1C0) >> 6; }
+void setFrame (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0xFE3F) | (i << 6);
+} }
+bool getAnimated (uint16_t m) { return (m & 0x200) >> 9; }
+void setAnimated (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0xFDFF) | (i << 9);
+} }
+uint8_t getLux (uint16_t m) { return (m & 0xC00) >> 10; }
+void setLux (uint16_t x, uint16_t y, uint8_t i) { if (x > 0 && x < MAP_W && y > 0 && y < MAP_H) {
+    map[x][y] = (map[x][y] & 0xF3FF) | (i << 10);
 } }
 
 void genMap ()
@@ -90,12 +98,37 @@ void genMap ()
         }
         size -= step;
     }
-  //Clean up
+  //En-masse
     for (uint16_t y = 1; y < MAP_H - 1; ++y) {
         for (uint16_t x = 1; x < MAP_W - 1; ++x) {
           //Remove all brick walls surrounded by stone biome (where village blobs have overlapped)
             if (getSprite(map[x][y]) == 2 && !getBiome(map[x+1][y]) && !getBiome(map[x-1][y]) && !getBiome(map[x][y+1]) && !getBiome(map[x][y-1])) {
                 setSprite(x, y, 0);
+            }
+          //Add random fireplace and luminosity on stone
+            if (!getBiome(map[x][y]) && !getSprite(map[x][y]) && rb(.01)) {
+                setSprite(x, y, 3);
+                setLux(x+0,y+0,3);
+                setLux(x+1,y+0,2);
+                setLux(x+2,y+0,1);
+                setLux(x-1,y+0,2);
+                setLux(x-2,y+0,1);
+                setLux(x+0,y+1,2);
+                setLux(x+1,y+1,2);
+                setLux(x+2,y+1,1);
+                setLux(x-1,y+1,2);
+                setLux(x-2,y+1,1);
+                setLux(x+0,y+2,1);
+                setLux(x+1,y+2,1);
+                setLux(x-1,y+2,1);
+                setLux(x+0,y-1,2);
+                setLux(x+1,y-1,2);
+                setLux(x+2,y-1,1);
+                setLux(x-1,y-1,2);
+                setLux(x-2,y-1,1);
+                setLux(x+0,y-2,1);
+                setLux(x+1,y-2,1);
+                setLux(x-1,y-2,1);
             }
         }
     }

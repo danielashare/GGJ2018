@@ -54,6 +54,20 @@ int main ()
     minimap.setPosition(sf::Vector2f(0, mm_diag_width / 2));
     minimap.setRotation(-45);
 
+  //Generate entities
+    entity[0] = new Entity(0, "Player", 0, 0);
+    std::cout << "Made " << entity[0]->eType << " " << std::to_string(entity[0]->index_in_array) << "\n";
+    for(int i = 1; i < 257; i++)
+    {
+      entity[i] = new Entity(i, "Villager", 0, 0);
+      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << "\n";
+    }
+    for(int i = 257; i < 513; i++)
+    {
+      entity[i] = new Entity(i, "Zombie", 0, 0);
+      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << "\n";
+    }
+
   //Generate map
     genMap();
 

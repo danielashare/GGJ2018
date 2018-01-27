@@ -7,11 +7,6 @@ const uint8_t TILE_SCALE = 32;
 const uint8_t TILE_W = 64, TILE_H = 32;
 const uint8_t SPRITE_W = 64, SPRITE_H = 64;
 const uint16_t WINDOW_W = 1024, WINDOW_H = 512;
-const uint16_t MAX_ENTITIES = 512;
-
-// entities
-Entity* entity[MAX_ENTITIES];
-uint8_t number_of_entities = 0;
 
 const uint16_t mm_size = WINDOW_W / 8; //Size of minimap on the screen
 const uint16_t mm_diag_width = sqrt(pow(mm_size, 2) + pow(mm_size, 2)); //Width of minimap rotated 45deg

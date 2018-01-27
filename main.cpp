@@ -67,17 +67,17 @@ int main ()
     minimap.setRotation(-45);
 
   //Generate entities
-    entity[0] = new Entity(0, "Player", 0, 0);
-    std::cout << "Made " << entity[0]->eType << " " << std::to_string(entity[0]->index_in_array) << "\n";
+    entity[0] = new Entity(0, "Player", rand() % MAP_W, rand() % MAP_H);
+    std::cout << "Made " << entity[0]->eType << " " << std::to_string(entity[0]->index_in_array) << " at " << entity[0]->position_X << "," << entity[0]->position_Y << "\n";
     for(int i = 1; i < 257; i++)
     {
-      entity[i] = new Entity(i, "Villager", 0, 0);
-      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << "\n";
+      entity[i] = new Entity(i, "Villager", rand() % MAP_W, rand() % MAP_H);
+      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << " at " << entity[i]->position_X << "," << entity[i]->position_Y << "\n";
     }
     for(int i = 257; i < 513; i++)
     {
-      entity[i] = new Entity(i, "Zombie", 0, 0);
-      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << "\n";
+      entity[i] = new Entity(i, "Zombie", rand() % MAP_W, rand() % MAP_H);
+      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << " at " << entity[i]->position_X << "," << entity[i]->position_Y << "\n";
     }
 
   //Generate map

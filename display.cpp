@@ -58,13 +58,21 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Image groundTe
             groundTile.setPosition(sf::Vector2f(draw_X, draw_Y));
           //Modulation normalise
             groundTile.setColor(sf::Color::White);
-          //Modulate if water
-            if (biome_code == 3) {
-                uint8_t r = 255;
-                uint8_t g = 255;
-                uint8_t b = 200 + fabs( sin(((x * y / 20) + ((float)game_time / 100))) ) * 55;
-                groundTile.setColor(sf::Color(r, g, b));
+          //Modulate biome
+            uint8_t r, g, b;
+            switch (biome_code) {
+                case 1: //Grass
+                    r = 210 + fabs( sin(x * y / 20) ) * 40;
+                    g = 225 + fabs( sin(x * y / 33) ) * 30;
+                    b = 255;
+                    break;
+                case 3: //Water
+                    r = 255;
+                    g = 255;
+                    b = 200 + fabs( sin(((x * y / 20) + ((float)game_time / 100))) ) * 55;
+                    break;
             }
+            groundTile.setColor(sf::Color(r, g, b));
           //Modulate if protag pos
             if (x == (int16_t)protag_X && y == (int16_t)protag_Y) {
                 groundTile.setColor(sf::Color(255, 0, 255));

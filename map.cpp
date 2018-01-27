@@ -8,10 +8,10 @@ const uint32_t MAP_A = MAP_W * MAP_H;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 0000 frame, 0000 sprite, 00 biome
 
 //Consonants
-const uint8_t GEN_ISLANDS = 4;
+const uint8_t GEN_ISLANDS = 16;
 const uint16_t GEN_ISLAND_MIN_RAD = 64;
 const uint16_t GEN_ISLAND_MAX_RAD = 128;
-const uint8_t GEN_ISLAND_RES = 5; //'resolution' of an island - how many blobs make it up
+const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
 
 void setBiome (uint16_t x, uint16_t y, uint8_t b)
 {

@@ -82,8 +82,17 @@ void genMap ()
         for (float ang = 0; ang < 6.28; ang += .01) {
             uint16_t x = village_X + village_radius * sinf(ang);
             uint16_t y = village_Y + village_radius * cosf(ang);
-            setSprite(x, y, 1);
+            setSprite(x, y, 2);
         }
         size -= step;
+    }
+  //Clean up
+    for (uint16_t y = 1; y < MAP_H - 1; ++y) {
+        for (uint16_t x = 1; x < MAP_W - 1; ++x) {
+          //Remove all brick walls surrounded by stone biome (where village blobs have overlapped)
+            if (getSprite(map[x][y]) == 2 && !getBiome(map[x+1][y]) && !getBiome(map[x-1][y]) && !getBiome(map[x][y+1]) && !getBiome(map[x][y-1])) {
+                setSprite(x, y, 0);
+            }
+        }
     }
 }

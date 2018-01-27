@@ -2,12 +2,11 @@
 
 #include "math.cpp"
 
-
 const uint16_t MAP_W = 512, MAP_H = 512;
 const uint32_t MAP_A = MAP_W * MAP_H;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
 
-//Consonants
+//Constants
 const uint8_t GEN_ISLANDS = 16;
 const uint16_t GEN_ISLAND_RAD_MIN = 64;
 const uint16_t GEN_ISLAND_RAD_MAX = 128;

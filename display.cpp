@@ -150,14 +150,14 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
 
   //Draw entities
 
-  //Lazy actions (per second)
+  //Lazy actions
     if (is_lazy) {
         uint32_t p = 0; //Pixel pointer for minimap
         for (uint16_t y = 0; y < MAP_H; ++y) {
             for (uint16_t x = 0; x < MAP_W; ++x) {
                 if (getAnimated(map[x][y])) {
                     uint8_t frame = getFrame(map[x][y]);
-                    setFrame(x, y, frame + 1);
+                    setFrame(x, y, (frame < 6 ? frame + 1 : 0));
                 }
               //Render minimap
                 if (x >= protag_X - mm_crosshair && x <= protag_X + mm_crosshair || y >= protag_Y - mm_crosshair && y <= protag_Y + mm_crosshair) {

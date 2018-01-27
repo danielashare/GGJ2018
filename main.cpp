@@ -83,7 +83,7 @@ int main ()
             protag_Y += dir_Y; /// 10;
         }
 
-        doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 100));
+        doDISPLAY(game_time, window, biomeTile, spriteTile, entityTile, !(game_time % 50));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

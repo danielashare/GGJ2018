@@ -14,7 +14,7 @@ sf::Uint8* mm = new sf::Uint8[mm_len]; //Pixel data of the minimap
 sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
 
-const uint16_t daynight_cycle = 200;
+const uint16_t daynight_cycle = 1000;
 float daynight_colour (uint32_t game_time, uint16_t mapPtr) {
     float lux = getLux(mapPtr);
     lux = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1) + (lux / 5);
@@ -93,9 +93,20 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
         //Set sprite Position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
+        //Modulation
+        uint8_t r = 255, g = 255, b = 255;
+        //If foliage, modulate with a distinctive colour
+        if (isFoliage(sprite_code)) {
+            uint8_t l = pi(x * y + 3, 0, 50);
+            r = pi(x * y    , 200, 255) - l;
+            g = pi(x * y + 1, 200, 255) - l;
+            b = pi(x * y + 2, 200, 255) - l;
+        }
         //Modulate for day/night
-        uint8_t c = 255 * daynight_colour(game_time, map[x][y]);
-        spriteTile.setColor(sf::Color(c, c, c));
+        r *= daynight_colour(game_time, *mapPtr);
+        g *= daynight_colour(game_time, *mapPtr);
+        b *= daynight_colour(game_time, *mapPtr);
+        spriteTile.setColor(sf::Color(r, g, b));
         //Draw sprite
         window.draw(spriteTile);
     }
@@ -172,8 +183,14 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
                     sf::Color c;
                     if (sprite_code) {
                         switch (sprite_code) {
-                            case 0: c = sf::Color(128, 84, 0); break; //Crate
-                            case 1: c = sf::Color(0, 0, 0); break; //Brick
+                            case 1: c = sf::Color(128, 84, 0); break; //Crate
+                            case 2: c = sf::Color(0, 0, 0); break; //Brick
+                            case 3: c = sf::Color::Yellow; break; //Campfire
+                            default:
+                                if (isFoliage(sprite_code)) {
+                                    c = sf::Color(0, 64, 0); //Foliage
+                                }
+                                break;
                         }
                     } else {
                         switch (biome_code) {

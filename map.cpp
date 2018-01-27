@@ -38,6 +38,15 @@ void setLux (uint16_t x, uint16_t y, uint8_t l, bool append = false) { if (x > 0
     map[x][y] = (map[x][y] & 0xF3FF) | (l << 10);
 } }
 
+bool isFoliage (uint8_t sprite_code)
+{
+    switch (sprite_code) {
+        case 4: case 5: return true;
+        default: return false;
+    }
+}
+
+
 void genMap ()
 {
   //Set map to water
@@ -109,8 +118,9 @@ void genMap ()
             if (getSprite(map[x][y]) == 2 && !getBiome(map[x+1][y]) && !getBiome(map[x-1][y]) && !getBiome(map[x][y+1]) && !getBiome(map[x][y-1])) {
                 setSprite(x, y, 0);
             }
+            uint8_t biome_code = getBiome(map[x][y]);
           //Add random fireplace and luminosity on stone
-            if (!getBiome(map[x][y]) && !getSprite(map[x][y]) && rb(.01)) {
+            if (!biome_code && !getSprite(map[x][y]) && rb(.01)) {
                 setSprite(x, y, 3);
                 setAnimated(x, y, true);
                 setLux(x+0,y+0,3, true);
@@ -134,6 +144,15 @@ void genMap ()
                 setLux(x+0,y-2,1, true);
                 setLux(x+1,y-2,1, true);
                 setLux(x-1,y-2,1, true);
+          //Add random foliage
+            } else if (biome_code == 1) {
+                if (rb(0.2)) {
+                    setSprite(x, y, 4);
+                    //setAnimated(x, y, true);
+                } else if (rb(0.3)) {
+                    setSprite(x, y, 5);
+                    //setAnimated(x, y, true);
+                }
             }
         }
     }

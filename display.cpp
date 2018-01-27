@@ -6,6 +6,7 @@
 const uint8_t TILE_SCALE = 32;
 const uint8_t TILE_W = 64, TILE_H = 32;
 const uint8_t SPRITE_W = 64, SPRITE_H = 64;
+const uint8_t ENTITY_W = 32, ENTITY_H = 64;
 const uint16_t WINDOW_W = 1024, WINDOW_H = 512;
 
 const uint16_t mm_size = WINDOW_W / 8; //Size of minimap on the screen
@@ -33,6 +34,12 @@ void getSpriteTex (uint8_t sprite_code, uint16_t x, uint16_t y, uint16_t &tex_X,
 {
     tex_X = getFrame(x, y) * SPRITE_W;
     tex_Y = (sprite_code - 1) * SPRITE_H;
+}
+
+void getVillagerTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
+{
+    tex_X = 0;
+    tex_Y = 0;
 }
 
 
@@ -92,7 +99,7 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
       //Prepare sprite for draw
         uint16_t tex_X, tex_Y;
         getSpriteTex(sprite_code, x, y, tex_X, tex_Y);
-        //Set sprite Position
+        //Set sprite position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
         //Modulation
@@ -111,6 +118,29 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
         spriteTile.setColor(sf::Color(r, g, b));
         //Draw sprite
         window.draw(spriteTile);
+    }
+}
+
+void drawVillager (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &villagerTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
+{
+    uint16_t *mapPtr = &map[x][y];
+    Entity* e = getEntity(x, y);
+    if (e->inited) {
+      //Prepare Villager for draw
+        uint16_t tex_X, tex_Y;
+        getVillagerTex(e, tex_X, tex_Y);
+        //Set entity tile position
+        villagerTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
+        villagerTile.setPosition(sf::Vector2f(draw_X, draw_Y - ENTITY_H/2));
+        //Modulation
+        uint8_t r = 255, g = 255, b = 255;
+        //Modulate for day/night
+        r *= daynight_colour(game_time, x, y);
+        g *= daynight_colour(game_time, x, y);
+        b *= daynight_colour(game_time, x, y);
+        villagerTile.setColor(sf::Color(r, g, b));
+        //Draw sprite
+        window.draw(villagerTile);
     }
 }
 
@@ -156,14 +186,13 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
     }
 }
 
-void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &entityTile, bool is_lazy = false)
+void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, bool is_lazy = false)
 {
     window.clear(sf::Color(255, 255, 255));
 
     doISOMETRIC(game_time, window, drawBiome, biomeTile);
     doISOMETRIC(game_time, window, drawSprite, spriteTile);
-
-  //Draw entities
+    doISOMETRIC(game_time, window, drawVillager, villagerTile);
 
   //Lazy actions
     if (is_lazy) {

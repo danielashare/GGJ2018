@@ -52,11 +52,11 @@ int main ()
     spriteTexture.loadFromImage(spriteTexImg);
     spriteTile.setTexture(spriteTexture);
     spriteTexture.setSmooth(false);
-    villagerTexture.loadFromImage(spriteTexImg);
-    villagerTile.setTexture(spriteTexture);
+    villagerTexture.loadFromImage(villagerTexImg);
+    villagerTile.setTexture(villagerTexture);
     villagerTexture.setSmooth(false);
-    zombieTexture.loadFromImage(spriteTexImg);
-    zombieTile.setTexture(spriteTexture);
+    zombieTexture.loadFromImage(zombieTexImg);
+    zombieTile.setTexture(zombieTexture);
     zombieTexture.setSmooth(false);
   //Minimap
     mm_tex.create(MAP_W, MAP_H);
@@ -77,12 +77,7 @@ int main ()
     for(int i = 257; i < 513; i++) {
         entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));
     }
-  //Init the entityMap
-    for (uint y = 0; y < MAP_H; ++y) {
-        for (uint x = 0; x < MAP_W; ++x) {
-            entity_map[x][y] = new Entity();
-        }
-    }
+    number_of_entities = 512;
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -112,8 +107,8 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(protag_rot + 270, dir_X, dir_Y);
         }
-        protag_X += dir_X;// / 10;
-        protag_Y += dir_Y;// / 5;
+        protag_X += dir_X / 20;
+        protag_Y += dir_Y / 10;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, !(game_time % 50));
 

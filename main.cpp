@@ -66,33 +66,16 @@ int main ()
     minimap.setPosition(sf::Vector2f(0, mm_diag_width / 2));
     minimap.setRotation(-45);
 
-<<<<<<< HEAD
-  //Generate entities
-    entity[0] = new Entity(0, "Player");
-    std::cout << "Made " << entity[0]->eType << " " << std::to_string(entity[0]->index_in_array) << " at " << entity[0]->position_X << "," << entity[0]->position_Y << "\n";
-    for(int i = 1; i < 257; i++)
-    {
-      entity[i] = new Entity(i, "Villager");
-      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << " at " << entity[i]->position_X << "," << entity[i]->position_Y << "\n";
-    }
-    for(int i = 257; i < 513; i++)
-    {
-      entity[i] = new Entity(i, "Zombie");
-      std::cout << "Made " << entity[i]->eType << " " << std::to_string(entity[i]->index_in_array) << " at " << entity[i]->position_X << "," << entity[i]->position_Y << "\n";
-    }
-
-=======
->>>>>>> daf10a4d2fab573a704491c5f8b8b08925aa1488
   //Generate map
     genMap();
 
   //Generate entities
-    entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
+    entity[0] = new Entity(0, 0);
     for(int i = 1; i < 257; i++) {
-        entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
+        entity[i] = new Entity(i, 0);
     }
     for(int i = 257; i < 513; i++) {
-        entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));
+        entity[i] = new Entity(i, 1);
     }
   //Init the entityMap
     for (uint y = 0; y < MAP_H; ++y) {

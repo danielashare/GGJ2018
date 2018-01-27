@@ -10,31 +10,11 @@ public:
   uint8_t type; // 0 Villager, 1 Zombie
   uint16_t index_in_array;
 
-<<<<<<< HEAD
-  Entity(uint16_t index_in_array, std::string type)
-  {
-    this->index_in_array = index_in_array;
-    this->eType = type;
-    if(eType == "Villager")
-    {
-      placeEntity(0);
-    }
-    else if(eType == "Zombie")
-    {
-      placeEntity(1);
-    }
-    else
-    {
-      placeEntity(0);
-    }
-  }
-
   void placeEntity(uint8_t target_biome)
   {
     uint16_t possible_X, possible_Y;
     bool found = 0;
-    int count = 0;
-    while(!found && count < 100)
+    while(!found)
     {
       // Get random coordinate to test
       possible_X = rand() % MAP_W;
@@ -46,37 +26,33 @@ public:
         this->position_X = (double)possible_X;
         this->position_Y = (double)possible_Y;
         found = !found;
-        count = 0;
-      }
-      else
-      {
-        std::cout << "No Match" << getBiome(possible_X,possible_Y) << "\n";
-        count++;
-      }
-      if (count == 100){
-        std::cin >> count;
       }
 
     }
   }
-=======
-  Entity (uint16_t, uint8_t, double, double);
+
+  Entity (uint16_t, uint8_t);
   Entity (); //For empty initialisation
 
   void moveTowards (uint16_t, uint16_t);
   void move ();
->>>>>>> daf10a4d2fab573a704491c5f8b8b08925aa1488
 };
 
 void updateEntityMap (Entity* e);
 
-Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_Y)
+Entity::Entity (uint16_t index_in_array, uint8_t type)
 {
     this->inited = true;
     this->index_in_array = index_in_array;
     this->type = type;
-    this->position_X = this->prev_X = this->target_X = pos_X;
-    this->position_Y = this->prev_X = this->target_X = pos_Y;
+    if(type == 0)
+    {
+      placeEntity(0);
+    }
+    else if(type == 1)
+    {
+      placeEntity(1);
+    }
     updateEntityMap(this);
 }
 
@@ -107,7 +83,7 @@ Entity* entity_map[MAP_W][MAP_H];
 
 void updateEntityMap (Entity* e)
 {
-std::cout << std::to_string(uint16_t(e->position_X)) << ", " << std::to_string(uint16_t(e->position_Y)) << std::endl; 
+std::cout << std::to_string(uint16_t(e->position_X)) << ", " << std::to_string(uint16_t(e->position_Y)) << std::endl;
     entity_map[e->prev_X][e->prev_Y] = new Entity();
     entity_map[uint16_t(e->position_X)][uint16_t(e->position_Y)] = e;
 }

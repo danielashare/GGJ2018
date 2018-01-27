@@ -37,6 +37,13 @@ int main ()
     entityTexture.loadFromImage(entityTexImg);
     entityTile.setTexture(entityTexture);
     entityTexture.setSmooth(true);
+  //Minimap
+    mm_tex.create(MAP_W, MAP_H);
+    minimap.scale(float(mm_size) / float(MAP_W), float(mm_size) / float(MAP_H));
+    minimap.setOutlineThickness(1);
+    minimap.setOutlineColor(sf::Color(0, 0, 0));
+    minimap.setPosition(sf::Vector2f(0, mm_diag_width / 2));
+    minimap.setRotation(-45);
 
   //Generate map
     genMap();
@@ -63,11 +70,11 @@ int main ()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag forwards (NW)
             float dir_X, dir_Y;
             angToVec(protag_rot, dir_X, dir_Y);
-            protag_X += dir_X / 10;
-            protag_Y += dir_Y / 10;
+            protag_X += dir_X; /// 10;
+            protag_Y += dir_Y; /// 10;
         }
 
-        doDISPLAY(game_time, window, groundTile);
+        doDISPLAY(game_time, window, groundTexImg, groundTile, !(game_time % 100));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

@@ -3,11 +3,12 @@
 #include "math.cpp"
 
 
-const uint16_t MAP_W = 4096, MAP_H = 4096;
+const uint16_t MAP_W = 1024, MAP_H = 1024;
+const uint32_t MAP_A = MAP_W * MAP_H;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 0000 frame, 0000 sprite, 00 biome
 
 //Consonants
-const uint8_t ISLANDS = 1;
+const uint8_t ISLANDS = 2;
 
 void setBiome (uint16_t x, uint16_t y, uint8_t b)
 {
@@ -30,11 +31,12 @@ void genMap ()
     }
 
     for (uint8_t i = 0; i < ISLANDS; ++i) {
-        uint32_t radius = ri(256, 512);
+        uint32_t radius = ri(128, 256);
         for (int16_t y = 0; y < MAP_H; ++y) {
+            radius += ri(-1, 1);
             for (int16_t x = 0; x < MAP_W; ++x) {
                 if (eD_approx(x, y, island_positions[i][0], island_positions[i][1]) < radius) {
-                    setBiome(x, y, 0);
+                    setBiome(x, y, 1);
                 }
             }
         }

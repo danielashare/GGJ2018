@@ -15,21 +15,21 @@ sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
 
 const uint16_t daynight_cycle = 1000;
-float daynight_colour (uint32_t game_time, uint16_t mapPtr) {
-    float lux = getLux(mapPtr);
+float daynight_colour (uint32_t game_time, uint16_t x, uint16_t y) {
+    float lux = getLux(x, y);
     lux = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1) + (lux / 5);
     return (lux < 1 ? lux : 1);
 }
 
-void getBiomeTex (uint8_t m, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex_Y)
+void getBiomeTex (uint16_t x, uint16_t y, uint8_t &biome_code, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    biome_code = getBiome(m);
+    biome_code = getBiome(x, y);
     tex_X = biome_code * TILE_W;
     tex_Y = 0;
 }
-void getSpriteTex (uint8_t sprite_code, uint16_t mapPtr, uint16_t &tex_X, uint16_t &tex_Y)
+void getSpriteTex (uint8_t sprite_code, uint16_t x, uint16_t y, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    tex_X = getFrame(mapPtr) * SPRITE_W;
+    tex_X = getFrame(x, y) * SPRITE_W;
     tex_Y = (sprite_code - 1) * SPRITE_H;
 }
 
@@ -43,7 +43,7 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
     //Get biome texture
     uint8_t biome_code;
     uint16_t tex_X, tex_Y;
-    getBiomeTex(*mapPtr, biome_code, tex_X, tex_Y);
+    getBiomeTex(x, y, biome_code, tex_X, tex_Y);
     //Set biome Position
     biomeTile.setTextureRect(sf::IntRect(tex_X, tex_Y, TILE_W, TILE_H));
     biomeTile.setPosition(sf::Vector2f(draw_X, draw_Y));
@@ -70,9 +70,9 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
             break;
     }
     //Modulate for day/night
-    r *= daynight_colour(game_time, *mapPtr);
-    g *= daynight_colour(game_time, *mapPtr);
-    b *= daynight_colour(game_time, *mapPtr);
+    r *= daynight_colour(game_time, x, y);
+    g *= daynight_colour(game_time, x, y);
+    b *= daynight_colour(game_time, x, y);
     biomeTile.setColor(sf::Color(r, g, b));
     //Modulate if protag pos
     if (x == (int16_t)protag_X && y == (int16_t)protag_Y) {
@@ -85,11 +85,11 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
 void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &spriteTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
 {
     uint16_t *mapPtr = &map[x][y];
-    uint8_t sprite_code = getSprite(*mapPtr);
+    uint8_t sprite_code = getSprite(x, y);
     if (sprite_code) {
       //Prepare sprite for draw
         uint16_t tex_X, tex_Y;
-        getSpriteTex(sprite_code, *mapPtr, tex_X, tex_Y);
+        getSpriteTex(sprite_code, x, y, tex_X, tex_Y);
         //Set sprite Position
         spriteTile.setTextureRect(sf::IntRect(tex_X, tex_Y, SPRITE_W, SPRITE_H));
         spriteTile.setPosition(sf::Vector2f(draw_X, draw_Y - SPRITE_H/2));
@@ -103,9 +103,9 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
             b = pi(x * y + 2, 200, 255) - l;
         }
         //Modulate for day/night
-        r *= daynight_colour(game_time, *mapPtr);
-        g *= daynight_colour(game_time, *mapPtr);
-        b *= daynight_colour(game_time, *mapPtr);
+        r *= daynight_colour(game_time, x, y);
+        g *= daynight_colour(game_time, x, y);
+        b *= daynight_colour(game_time, x, y);
         spriteTile.setColor(sf::Color(r, g, b));
         //Draw sprite
         window.draw(spriteTile);
@@ -166,8 +166,8 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
         uint32_t p = 0; //Pixel pointer for minimap
         for (uint16_t y = 0; y < MAP_H; ++y) {
             for (uint16_t x = 0; x < MAP_W; ++x) {
-                if (getAnimated(map[x][y])) {
-                    uint8_t frame = getFrame(map[x][y]);
+                if (getAnimated(x, y)) {
+                    uint8_t frame = getFrame(x, y);
                     setFrame(x, y, (frame < 6 ? frame + 1 : 0));
                 }
               //Render minimap
@@ -177,9 +177,8 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
                     mm[p + 3] = 255;
                 } else {
                     uint16_t tex_X, tex_Y;
-                    uint16_t *mapPtr = &map[x][y];
-                    uint8_t biome_code = getBiome(*mapPtr);
-                    uint8_t sprite_code = getSprite(*mapPtr);
+                    uint8_t biome_code = getBiome(x, y);
+                    uint8_t sprite_code = getSprite(x, y);
                     sf::Color c;
                     if (sprite_code) {
                         switch (sprite_code) {

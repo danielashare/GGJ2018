@@ -13,8 +13,8 @@ const uint16_t GEN_ISLAND_RAD_MIN = 64;
 const uint16_t GEN_ISLAND_RAD_MAX = 128;
 const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
 const uint8_t GEN_VILLAGES = 32;
-const uint16_t GEN_VILLAGE_RAD_MIN = 16;
-const uint16_t GEN_VILLAGE_RAD_MAX = 32;
+const uint16_t GEN_VILLAGE_RAD_MIN = 8;
+const uint16_t GEN_VILLAGE_RAD_MAX = 16;
 const uint16_t GEN_GROW_MAP = 4096;
 const uint16_t MAP_GROW_SPEED = 128;
 const uint16_t MAP_DEATH_SPEED = 32;
@@ -178,7 +178,7 @@ void genMap ()
     }
   //Grow the map naturally for a bit
     for (uint16_t g = 0; g < GEN_GROW_MAP; ++g) {
-        //growMap();
+        growMap();
     }
 }
 

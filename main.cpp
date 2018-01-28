@@ -137,6 +137,7 @@ int main ()
         entity[0]->pos_X = protag_X;
         entity[0]->pos_Y = protag_Y;
         entity[0]->rot = protag_rot;
+        entity[0]->tryDir(dir_X, dir_Y);
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 

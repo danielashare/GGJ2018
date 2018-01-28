@@ -23,11 +23,11 @@ class Entity {
 
     void think ();
     void moveTowards (uint16_t, uint16_t);
+    bool tryDir (float, float);
     void move ();
     void animate ();
 
   private:
-      bool tryDir (float, float);
       float animate_clock = 0;
 };
 
@@ -64,6 +64,9 @@ bool Entity::tryDir (float dir_X, float dir_Y)
     if (!isSolid(getSprite(new_X, new_Y))) {
         pos_X = new_X;
         pos_Y = new_Y;
+    } else {
+        int8_t dx = (dir_X > 0 ? 1 : -1), dy = (dir_Y > 0 ? 1 : -1);
+        pushCrate(new_X, new_Y, dx, dy);
     }
 }
 

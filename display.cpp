@@ -163,7 +163,7 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
   //Start isometric loop
     for (int16_t y = camera_Y1; y < camera_Y2; ++y) {
       for (int16_t x = camera_X2; x >= camera_X1; --x) {
-          if (draw_X > -TILE_W && draw_X < WINDOW_W + TILE_W && draw_Y > -TILE_H && draw_Y < WINDOW_H + TILE_H) {// && draw_X < tiles_X && draw_Y > 0 && draw_Y < tiles_Y) {
+          if (draw_X > -TILE_W && draw_X < WINDOW_W + TILE_W && draw_Y > -TILE_H && draw_Y < WINDOW_H + TILE_H) {
             //Prepare and call upon the argument drawer function
               (*drawer)(game_time, window, tile, x, y, draw_X, draw_Y);
           }

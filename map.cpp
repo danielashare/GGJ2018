@@ -71,6 +71,20 @@ bool isSolid (uint8_t sprite_code)
     }
 }
 
+
+
+void pushCrate (uint16_t x, uint16_t y, int8_t dx, int8_t dy)
+{
+    if (dx > dy) { dx = 1; dy = 0; } else { dx = 0; dy = 1; }
+    uint16_t px = x + dx;
+    uint16_t py = y + dy;
+    if (getSprite(x, y) == 1 && !isSolid(getSprite(px, py))) {
+        setSprite(x, y, 0);
+        setSprite(px, py, 1);
+    }
+}
+
+
 void growMap (uint16_t grow_speed = MAP_GROW_SPEED, uint16_t death_speed = MAP_DEATH_SPEED);
 
 void genMap ()

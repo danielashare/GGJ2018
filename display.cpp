@@ -3,7 +3,7 @@
 #include "Entity.cpp"
 
 
-sf::Text txt_HUD;
+sf::Text txt_float;
 
 
 const uint8_t TILE_SCALE = 32;
@@ -236,15 +236,15 @@ void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, s
                     window.draw(zombieTile);
                     break;
             }
-txt_HUD.setPosition(sf::Vector2f(draw_X, draw_Y));
-txt_HUD.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
-txt_HUD.setFillColor(color);
-window.draw(txt_HUD);
+txt_float.setPosition(sf::Vector2f(draw_X, draw_Y));
+txt_float.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
+txt_float.setFillColor(color);
+window.draw(txt_float);
         }
     }
 }
 
-void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_HUD, bool is_lazy = false)
+void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_float, sf::Text txt_HUD, bool is_lazy = false)
 {
     window.clear(sf::Color(255, 255, 255));
 
@@ -252,6 +252,8 @@ void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::
     doISOMETRIC(prot, game_time, window, drawSprite, spriteTile);
 
     drawEntities(prot, game_time, window, villagerTile, zombieTile);
+
+    window.draw(txt_HUD);
 
   //Lazy actions
     if (is_lazy) {

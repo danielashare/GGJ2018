@@ -12,6 +12,7 @@ int main ()
 
 
   //Declare asset thingies
+    sf::Text txt_HUD;
     sf::Font fnt_arial;
     sf::Image biomeTexImg;
     sf::Texture biomeTexture;
@@ -45,8 +46,12 @@ int main ()
     if (!zombieTexImg.loadFromFile("Assets/zombie.png")) {
         std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
+    txt_float.setFont(fnt_arial);
+    txt_float.setCharacterSize(12);
     txt_HUD.setFont(fnt_arial);
-    txt_HUD.setCharacterSize(12);
+    txt_HUD.setCharacterSize(20);
+    txt_HUD.setPosition(sf::Vector2f(4, WINDOW_H - 24));
+    txt_float.setFillColor(sf::Color::White);
     biomeTexture.loadFromImage(biomeTexImg);
     biomeTile.setTexture(biomeTexture);
     biomeTexture.setSmooth(false);
@@ -86,7 +91,7 @@ int main ()
         do {
             x = ri(0, MAP_W);
             y = ri(0, MAP_H);
-        } while (getBiome(x, y) == B_STONE || getSprite(x, y));
+        } while (getBiome(x, y) == B_STONE || getBiome(x, y) == B_WATER || getSprite(x, y));
         entity.push_back(new Entity(z, 1, x, y));
     }
   //Move player to suitable location (stone)
@@ -96,7 +101,6 @@ int main ()
     } while (getBiome(prot->pos_X, prot->pos_Y) != B_STONE || getSprite(prot->pos_X, prot->pos_Y));
 
   //Start game-loop
-    uint32_t game_time = 0;
     while (window.isOpen())
     {
         sf::Event event;
@@ -141,19 +145,26 @@ int main ()
         }
         prot->rot = prot->rot;
 
-        doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
+      //DISPLAY
+        doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_float, txt_HUD, !(game_time % 50));
 
       //Entity stuff
         bool is_nighttime = sky_darkness < .4;
+        uint16_t humans = 0, zombies = 0;
         for (uint16_t e = 1; e < entity.size(); ++e) {
             Entity* ent = entity[e];
             if (ent->is_dead) { continue; }
             if (rb(0.01)) { ent->think(is_nighttime); }
             ent->move();
             ent->animate();
+            if (ent->type == E_VILLAGER) { ++humans; }
+             else if (ent->type == E_ZOMBIE) { ++zombies; }
         }
         prot->animate();
 
+
+      //HUD
+        txt_HUD.setString("Human: "+ std::to_string(humans) +", zombie: "+ std::to_string(zombies) +"; "+ std::to_string(uint8_t(float(zombies)/entity.size()*100)) +"% infected");
         sf::sleep(sf::milliseconds(10));
         ++game_time;
     }

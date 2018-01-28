@@ -142,12 +142,12 @@ bool Entity::tryDir (float dir_X, float dir_Y)
         pos_X = new_X;
         pos_Y = new_Y;
         if (check_sprite == S_CAMPFIRE) {
-            harm(1);
+            harm(64);
         }
         return true;
     } else {
       //Try pushing outwards
-        pushCrate(check_X, check_Y, d_X, d_Y);
+        if (type == E_VILLAGER) { pushCrate(check_X, check_Y, d_X, d_Y); }
       //Trigger a loiter
         loiter();
         return false;

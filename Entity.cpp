@@ -1,4 +1,4 @@
-
+#include "Projectile.cpp"
 
 #define E_VILLAGER 0
 #define E_ZOMBIE   1
@@ -36,6 +36,7 @@ class Entity {
     void move ();
     void harm (uint8_t);
     void animate ();
+    void shoot();
 
   private:
       void loiter ();
@@ -97,6 +98,28 @@ void Entity::think (bool is_nighttime)
         case 0: //Villager
           //Loiter
             if (rb(.4)) { loiter(); }
+            // Find zombie to shoot at
+            if (attack_timeout)
+            {
+              --attack_timeout;
+              if(!attack_timeout) {
+                target = NULL;
+              }
+            }
+            else
+            {
+              if(rb()) {
+                for (uint16_t e = 0; e < entity.size(); ++e)
+                {
+                  if(entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
+                  if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
+                    if(entity[e]->targetted_at + 50 > game_time) { continue; }
+                    shoot(entity[e]);
+                    break;
+                  }
+                }
+              }
+            }
             break;
         case 1: //Zombie
             if (attack_timeout) {
@@ -187,4 +210,9 @@ void Entity::animate ()
         if (had_moved) { ++frame; }
         had_moved = false;
     }
+}
+
+void Entity::shoot ()
+{
+  projectiles.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
 }

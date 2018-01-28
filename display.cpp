@@ -216,13 +216,14 @@ void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, s
             r *= daynight_colour(game_time, x, y);
             g *= daynight_colour(game_time, x, y);
             b *= daynight_colour(game_time, x, y);
+            sf::Color color (r, g, b);
             //Texture & Display
             switch (entity[e]->type) {
                 case 0: //Villager
                     getVillagerTex(entity[e], tex_X, tex_Y);
                     villagerTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
                     villagerTile.setPosition(sf::Vector2f(draw_X, draw_Y));
-                    villagerTile.setColor(sf::Color(r, g, b));
+                    villagerTile.setColor(color);
                     //Draw sprite
                     window.draw(villagerTile);
                     break;
@@ -230,13 +231,14 @@ void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, s
                     getZombieTex(entity[e], tex_X, tex_Y);
                     zombieTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
                     zombieTile.setPosition(sf::Vector2f(draw_X, draw_Y));
-                    zombieTile.setColor(sf::Color(r, g, b));
+                    zombieTile.setColor(color);
                     //Draw sprite
                     window.draw(zombieTile);
                     break;
             }
 txt_HUD.setPosition(sf::Vector2f(draw_X, draw_Y));
 txt_HUD.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
+txt_HUD.setFillColor(color);
 window.draw(txt_HUD);
         }
     }

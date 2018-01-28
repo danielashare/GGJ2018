@@ -52,10 +52,10 @@ int main ()
     }
 
     // Array of sounds to load
-    std::vector<std::string> sounds = {"gun_shot.ogg", "natureshort.wav", "women_hurt.ogg", "zombieyell.ogg"};
+    std::vector<std::string> sounds = {"gun_shot.ogg", "women_hurt.ogg", "zombiehurt.ogg", "zombiedie.ogg"};
 
     //Init soundBuffer
-    for (uint a = 0; a < 5; ++a) {
+    for (uint a = 0; a < 4; ++a) {
         soundBuffer.push_back(new sf::SoundBuffer);
         if (!soundBuffer[a]->loadFromFile("Assets/" + sounds[a])) {
             std::cout << "ERR: Couldn't load sound: audio/" + std::to_string(a) << std::endl;
@@ -124,9 +124,6 @@ int main ()
         prot->pos_X = ri(0, MAP_W);
         prot->pos_Y = ri(0, MAP_H);
     } while (getBiome(prot->pos_X, prot->pos_Y) != B_STONE || getSprite(prot->pos_X, prot->pos_Y));
-
-    // Start background sound
-    playSound(1, 1, 0, 0, prot->pos_X, prot->pos_Y);
 
     uint64_t prev_shot = 0;
   //Start game-loop

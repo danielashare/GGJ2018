@@ -9,16 +9,16 @@
 
 #define S_CAMPFIRE 3
 
-const uint16_t MAP_W = 512, MAP_H = 512;
+const uint16_t MAP_W = 488, MAP_H = 488;
 const uint32_t MAP_A = MAP_W * MAP_H;
                             //eeeeeeee eeeeeeee     llaf ffssssbb
 uint32_t map[MAP_W][MAP_H]; //00000000 00000000 00000000 00000000 - 0000000000000000 entity map id, 0000 RESERVED, 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
 uint64_t game_time = 0;
 
 //Constants
-const uint8_t GEN_ISLANDS = 4;
+const uint8_t GEN_ISLANDS = 5;
 const uint16_t GEN_ISLAND_RAD_MIN = 48;
-const uint16_t GEN_ISLAND_RAD_MAX = 128;
+const uint16_t GEN_ISLAND_RAD_MAX = 64;
 const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
 const uint8_t GEN_VILLAGES = 64;
 const uint16_t GEN_VILLAGE_RAD_MIN = 8;
@@ -164,7 +164,7 @@ void genMap ()
             size -= step;
         }
       //Go through all angles and add a brick wall
-        for (float ang = 0; ang < 6.28; ang += .06) { //wide angle to cause some gaps
+        for (float ang = 0; ang < 6.28; ang += .07) { //wide angle to cause some gaps
             uint16_t x = village_X + village_radius * sinf(ang);
             uint16_t y = village_Y + village_radius * cosf(ang);
             setSprite(x, y, 2);

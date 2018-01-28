@@ -4,16 +4,17 @@
 #define E_ZOMBIE   1
 
 const uint8_t ENTITY_W = 32, ENTITY_H = 64;
-const uint16_t GEN_VILLAGERS = 2048;
+const uint16_t GEN_VILLAGERS = 1024;
 const uint16_t GEN_ZOMBIES = 256;
 const float ANI_INTERVAL = 2;
 const uint8_t SHOOT_DISTANCE = 16;
-const uint8_t ATTACK_DISTANCE = 8;
+const uint8_t ATTACK_DISTANCE = 16;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
-const uint8_t PROJECTILE_DAMAGE = 16;
+const uint8_t PROJECTILE_DAMAGE = 12;
 const float PROJECTILE_SPEED = .25;
-const float REWARD_HEALTH = 1;
+const float REWARD_HEALTH = 10;
+const uint8_t SOUND_INTERVAL = 30;
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
@@ -48,7 +49,8 @@ class Entity {
     bool had_moved = true;
 
     uint8_t attack_timeout = 0;
-    uint32_t targetted_at = 0; //Last time this Entity was targetted
+    uint64_t targetted_at = 0; //Last time this Entity was targetted
+    uint64_t prev_hurt = 0; //Last time this entity was hurt
 
     float health_score = 255, speed = NORMAL_SPEED, power_score = 1;
 
@@ -93,7 +95,7 @@ void Entity::attack (Entity* who)
 }
 
 void Entity::reward()
-{
+{/*
   if(this->health_score + REWARD_HEALTH > MAX_HEALTH)
   {
     this->health_score = MAX_HEALTH;
@@ -101,7 +103,7 @@ void Entity::reward()
   else
   {
     this->health_score += REWARD_HEALTH;
-  }
+}*/
 }
 
 void Entity::lashOut ()
@@ -116,11 +118,14 @@ void Entity::lashOut ()
 
 void Entity::harm (uint8_t damage)
 {
-    if(type == E_VILLAGER)
-    {
-      playSound(2, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
-    } else if (type == E_ZOMBIE) {
-      playSound(3, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+    if (prev_hurt + SOUND_INTERVAL < game_time) {
+        prev_hurt = game_time;
+        if(type == E_VILLAGER)
+        {
+          playSound(1, rf(.75, 1.25), this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+        } else if (type == E_ZOMBIE) {
+          playSound(2, rf(.75, 1.25), this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+        }
     }
     health_score -= damage;
     if (health_score < 0) {
@@ -128,6 +133,7 @@ void Entity::harm (uint8_t damage)
             type = E_ZOMBIE;
             health_score = MAX_HEALTH;
         } else if (type == E_ZOMBIE) {
+          playSound(3, rf(.75, 1.25), this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
             is_dead = true;
             health_score = 0;
             frame = 0;
@@ -148,7 +154,7 @@ void Entity::think (bool is_nighttime)
           //Loiter
             if (rb(.4)) { loiter(); }
             // Find zombie to shoot at
-              if(rb()) {
+              if(rb(.2)) {
                 for (uint16_t e = 0; e < entity.size(); ++e)
                 {
                   if (entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
@@ -254,14 +260,14 @@ void Entity::shoot (Entity* victim)
   double dir_X, dir_Y;
   targToVec(this->pos_X, this->pos_Y, victim->pos_X, victim->pos_Y, dir_X, dir_Y);
   float dir_ang = vecToAng(dir_X, dir_Y);
-  playSound(0, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+  playSound(0, rf(.5, 1.5), this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
   this->rot = dir_ang;
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
 }
 
 void Entity::shootDir ()
 {
-  playSound(0, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+  playSound(0, rf(.5, 1.5), this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
 }
 

@@ -75,6 +75,8 @@ int main ()
   //Generate map
     genMap();
 
+  //Dummy Entity
+    entity.push_back(new Entity());
   //Spawn Villagers
     for (uint16_t v = 0; v < GEN_VILLAGERS; ++v) {
         uint16_t x, y;
@@ -84,7 +86,7 @@ int main ()
         } while (getBiome(x, y) != B_STONE || getSprite(x, y));
         entity.push_back(new Entity(v, 0, x, y));
     }
-    Entity* prot = entity[0];
+    Entity* prot = entity[1];
   //Spawn Zombies
     for (uint16_t z = 0; z < GEN_ZOMBIES; ++z) {
         uint16_t x, y;
@@ -151,7 +153,7 @@ int main ()
       //Entity stuff
         bool is_nighttime = sky_darkness < .4;
         uint16_t ents = 0, humans = 0, zombies = 0;
-        for (uint16_t e = 1; e < entity.size(); ++e) {
+        for (uint16_t e = 2; e < entity.size(); ++e) {
             Entity* ent = entity[e];
             if (ent->is_dead) { continue; }
             if (rb(0.01)) { ent->think(is_nighttime); }

@@ -1,4 +1,4 @@
-#include "Projectile.cpp"
+
 
 #define E_VILLAGER 0
 #define E_ZOMBIE   1
@@ -9,7 +9,23 @@ const float ANI_INTERVAL = 2;
 const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
+const uint8_t PROJECTILE_DAMAGE = 32;
 
+class Entity;
+std::vector<Entity*> entity = std::vector<Entity*>();
+class Projectile;
+std::vector<Projectile*> projectiles = std::vector<Projectile*>();
+class Projectile {
+public:
+  float vel_X, vel_Y;
+  double pos_X, pos_Y;
+  bool had_Hit = false;
+  Entity* shooter;
+
+  void move();
+  Projectile(double, double, float, Entity*);
+
+};
 
 class Entity {
   public:
@@ -37,7 +53,8 @@ class Entity {
     void move ();
     void harm (uint8_t);
     void animate ();
-    void shoot();
+    void shoot(Entity*);
+    void shootDir();
 
   private:
       void loiter ();
@@ -46,8 +63,6 @@ class Entity {
       Entity* target = NULL;
       float animate_clock = 0;
 };
-
-std::vector<Entity*> entity = std::vector<Entity*>();
 
 Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_Y)
 {
@@ -216,7 +231,39 @@ void Entity::animate ()
     }
 }
 
-void Entity::shoot ()
+void Entity::shoot (Entity* victim)
+{
+  double dir_X, dir_Y;
+  targToVec(this->pos_X, this->pos_Y, victim->pos_X, victim->pos_Y, dir_X, dir_Y);
+  float dir_ang = vecToAng(dir_X, dir_Y);
+  projectiles.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
+}
+
+void Entity::shootDir ()
 {
   projectiles.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
+}
+
+Projectile::Projectile(double pos_X, double pos_Y, float rot, Entity* shooter) {
+  this->pos_X = pos_X;
+  this->pos_Y = pos_Y;
+  this->shooter = shooter;
+  angToVec(rot, vel_X, vel_Y);
+}
+
+void Projectile::move() {
+  pos_X += vel_X;
+  pos_Y += vel_Y;
+  if(isSolid(getSprite(pos_X, pos_Y)))
+  {
+    had_Hit = true;
+  }
+  else {
+    Entity* here = entity[getMapEntity(pos_X, pos_Y)];
+    if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
+      had_Hit = true;
+      here->harm(PROJECTILE_DAMAGE);
+      //shooter->reward();
+    }
+  }
 }

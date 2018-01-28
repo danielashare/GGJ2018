@@ -117,7 +117,7 @@ int main ()
 		mouse_pos.x = (float(WINDOW_W) / float(window.getSize().x)) * float(mouse_pos.x);  //
 		mouse_pos.y = (float(WINDOW_H) / float(window.getSize().y)) * float(mouse_pos.y); // Adjust for scaled window
         prot->rot = normaliseAng(vecToAng((mouse_pos.x - float(WINDOW_W / 2)) / 2, mouse_pos.y - float(WINDOW_H / 2)) + 45);
-      //Check keyboard
+      //Check keyboard and mouse
         float dir_X = 0, dir_Y = 0;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag foward (NW)
             angToVec(prot->rot, dir_X, dir_Y);
@@ -127,6 +127,9 @@ int main ()
             angToVec(prot->rot + 180, dir_X, dir_Y);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(prot->rot + 270, dir_X, dir_Y);
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            prot->shootDir();
         }
       //Speed based on mouse distance from the center
         if (mouse_pos.x > WINDOW_W*.75) { mouse_pos.x = WINDOW_W*.75; }

@@ -165,10 +165,10 @@ int main ()
         uint16_t ents = 0, humans = 0, zombies = 0;
         for (uint16_t e = 2; e < entity.size(); ++e) {
             Entity* ent = entity[e];
+            ent->animate();
             if (ent->is_dead) { continue; }
             if (rb(0.01)) { ent->think(is_nighttime); }
             ent->move();
-            ent->animate();
 
             ++ents;
             if (ent->type == E_VILLAGER) { ++humans; }

@@ -7,12 +7,13 @@ const uint8_t ENTITY_W = 32, ENTITY_H = 64;
 const uint16_t GEN_VILLAGERS = 2048;
 const uint16_t GEN_ZOMBIES = 256;
 const float ANI_INTERVAL = 2;
+const uint8_t SHOOT_DISTANCE = 16;
 const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 const uint8_t PROJECTILE_DAMAGE = 32;
 const float PROJECTILE_SPEED = .25;
-const uint8_t REWARD_HEALTH = 32;
+const uint8_t REWARD_HEALTH = 1;
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
@@ -122,6 +123,8 @@ void Entity::harm (uint8_t damage)
         } else if (type == E_ZOMBIE) {
             is_dead = true;
             health_score = 0;
+            frame = 0;
+            speed = NORMAL_SPEED*3; //For the animation
         }
     }
 }
@@ -142,7 +145,7 @@ void Entity::think (bool is_nighttime)
                 for (uint16_t e = 0; e < entity.size(); ++e)
                 {
                   if (entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
-                  if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
+                  if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < SHOOT_DISTANCE / (is_nighttime+1)) {
                     shoot(entity[e]);
                     break;
                   }
@@ -236,8 +239,8 @@ void Entity::animate ()
     animate_clock += speed * 4;
     if (animate_clock > ANI_INTERVAL) {
         animate_clock = 0;
-        if (had_moved) { ++frame; }
-        had_moved = false;
+        if (is_dead) { if (frame < 4) { ++frame; } return; }
+        if (had_moved) { ++frame; had_moved = false; }
     }
 }
 
@@ -246,6 +249,7 @@ void Entity::shoot (Entity* victim)
   double dir_X, dir_Y;
   targToVec(this->pos_X, this->pos_Y, victim->pos_X, victim->pos_Y, dir_X, dir_Y);
   float dir_ang = vecToAng(dir_X, dir_Y);
+  this->rot = dir_ang;
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
 }
 

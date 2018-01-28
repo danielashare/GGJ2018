@@ -150,13 +150,15 @@ int main ()
 
       //Entity stuff
         bool is_nighttime = sky_darkness < .4;
-        uint16_t humans = 0, zombies = 0;
+        uint16_t ents = 0, humans = 0, zombies = 0;
         for (uint16_t e = 1; e < entity.size(); ++e) {
             Entity* ent = entity[e];
             if (ent->is_dead) { continue; }
             if (rb(0.01)) { ent->think(is_nighttime); }
             ent->move();
             ent->animate();
+
+            ++ents;
             if (ent->type == E_VILLAGER) { ++humans; }
              else if (ent->type == E_ZOMBIE) { ++zombies; }
         }
@@ -164,7 +166,7 @@ int main ()
 
 
       //HUD
-        txt_HUD.setString("Human: "+ std::to_string(humans) +", zombie: "+ std::to_string(zombies) +"; "+ std::to_string(uint8_t(float(zombies)/entity.size()*100)) +"% infected");
+        txt_HUD.setString("Human: "+ std::to_string(humans) +", zombie: "+ std::to_string(zombies) +"; "+ std::to_string(uint8_t(float(zombies)/ents*100)) +"% infected");
         sf::sleep(sf::milliseconds(10));
         ++game_time;
     }

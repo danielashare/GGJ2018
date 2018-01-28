@@ -41,6 +41,11 @@ void getVillagerTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
     tex_X = 0;
     tex_Y = 0;
 }
+void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
+{
+    tex_X = 0;
+    tex_Y = 0;
+}
 
 
 
@@ -163,56 +168,58 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
     }
 }
 
-void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile, sf::Text txt_HUD)
+void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile)
 {
-    int16_t tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
+    double tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
     tiles_X = (WINDOW_W / TILE_SCALE);
     tiles_Y = (WINDOW_H / TILE_SCALE);
-    camera_X1 = uint16_t(protag_X) - tiles_X/2;
-    camera_Y1 = uint16_t(protag_Y) - tiles_Y ;
+    camera_X1 = protag_X - tiles_X/2;
+    camera_Y1 = protag_Y - tiles_Y ;
     camera_X2 = camera_X1 + tiles_X + 2;
     camera_Y2 = camera_Y1 + tiles_Y*2 + 2;
     camera_W = camera_X2 - camera_X1;
     camera_H = camera_Y2 - camera_Y1;
 
-    for (uint16_t e = 0; e < number_of_entities; ++e) {
-        double x = entity[e]->position_X, y = entity[e]->position_Y;
+    for (uint16_t e = 0; e < entity.size(); ++e) {
+        double x = entity[e]->pos_X, y = entity[e]->pos_Y;
         if (x > camera_X1 && y > camera_Y1 && x < camera_X2 && y < camera_Y2) {
             double draw_X, draw_Y;
             draw_X = (x - camera_X1); //Tiles across X
             draw_Y = (y - camera_Y1); //Tiles across Y
-txt_HUD.setString(std::to_string(int16_t(draw_X)) + ", " + std::to_string(int16_t(draw_Y)));
             //In order to position correctly:
-            float e_offset_X = 0, e_offset_Y = 0;
+            double e_offset_X = 0, e_offset_Y = 0;
             //First go right and down according to the Y coord
             e_offset_X += (draw_Y * (TILE_W/2));
             e_offset_Y += (draw_Y * (TILE_H/2));
             //Then go left and down according to the X coord
             e_offset_X -= ((16 - draw_X) * (TILE_W/2));
             e_offset_Y += ((16 - draw_X) * (TILE_H/2));
-            draw_X = e_offset_X;
+            draw_X = e_offset_X - ENTITY_W/2;
             draw_Y = e_offset_Y - ENTITY_H;
             uint16_t tex_X, tex_Y;
+            //Modulation
+            uint8_t r = 255, g = 255, b = 255;
+            //Modulate for day/night
+            r *= daynight_colour(game_time, x, y);
+            g *= daynight_colour(game_time, x, y);
+            b *= daynight_colour(game_time, x, y);
+            //Texture & Display
             switch (entity[e]->type) {
                 case 0: //Villager
-                {
-                  //Prepare sprite for draw
                     getVillagerTex(entity[e], tex_X, tex_Y);
-                    //Set sprite position
                     villagerTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
                     villagerTile.setPosition(sf::Vector2f(draw_X, draw_Y));
-txt_HUD.setPosition(sf::Vector2f(WINDOW_W/2, WINDOW_H/2));
-window.draw(txt_HUD);
-                    //Modulation
-                    uint8_t r = 255, g = 255, b = 255;
-                    //Modulate for day/night
-                    r *= daynight_colour(game_time, x, y);
-                    g *= daynight_colour(game_time, x, y);
-                    b *= daynight_colour(game_time, x, y);
                     villagerTile.setColor(sf::Color(r, g, b));
                     //Draw sprite
                     window.draw(villagerTile);
-                }
+                    break;
+                case 1: //Zombie
+                    getZombieTex(entity[e], tex_X, tex_Y);
+                    zombieTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
+                    zombieTile.setPosition(sf::Vector2f(draw_X, draw_Y));
+                    zombieTile.setColor(sf::Color(r, g, b));
+                    //Draw sprite
+                    window.draw(zombieTile);
                     break;
             }
         }
@@ -226,7 +233,7 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
     doISOMETRIC(game_time, window, drawBiome, biomeTile);
     doISOMETRIC(game_time, window, drawSprite, spriteTile);
 
-    drawEntities(game_time, window, villagerTile, zombieTile, txt_HUD);
+    drawEntities(game_time, window, villagerTile, zombieTile);
 
   //Lazy actions
     if (is_lazy) {

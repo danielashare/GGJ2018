@@ -63,7 +63,11 @@ void Entity::attack (Entity* who)
 
 void Entity::lashOut ()
 {
-    target->harm(power_score);
+    if (target->type != E_ZOMBIE) {
+        target->harm(power_score);
+    } else {
+        attack_timeout = 0;
+    }
 }
 
 void Entity::harm (uint8_t damage)

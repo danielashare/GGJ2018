@@ -244,7 +244,50 @@ window.draw(txt_float);
     }
 }
 
-void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_float, sf::Text txt_HUD, bool is_lazy = false)
+void drawProjectiles (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::CircleShape projectileTile)
+{
+    double tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
+    tiles_X = (WINDOW_W / TILE_SCALE);
+    tiles_Y = (WINDOW_H / TILE_SCALE);
+    camera_X1 = prot->pos_X - tiles_X/2;
+    camera_Y1 = prot->pos_Y - tiles_Y ;
+    camera_X2 = camera_X1 + tiles_X + 2;
+    camera_Y2 = camera_Y1 + tiles_Y*2 + 2;
+    camera_W = camera_X2 - camera_X1;
+    camera_H = camera_Y2 - camera_Y1;
+
+    for (uint16_t p = 0; p < projectile.size(); ++p) {
+        double x = projectile[p]->pos_X, y = projectile[p]->pos_Y;
+        if (x > camera_X1 && y > camera_Y1 && x < camera_X2 && y < camera_Y2) {
+            double draw_X, draw_Y;
+            draw_X = (x - camera_X1); //Tiles across X
+            draw_Y = (y - camera_Y1); //Tiles across Y
+            //In order to position correctly:
+            double e_offset_X = 0, e_offset_Y = 0;
+            //First go right and down according to the Y coord
+            e_offset_X += (draw_Y * (TILE_W/2));
+            e_offset_Y += (draw_Y * (TILE_H/2));
+            //Then go left and down according to the X coord
+            e_offset_X -= ((16 - draw_X) * (TILE_W/2));
+            e_offset_Y += ((16 - draw_X) * (TILE_H/2));
+            draw_X = e_offset_X - ENTITY_W/2;
+            draw_Y = e_offset_Y - ENTITY_H/2;
+            uint16_t tex_X, tex_Y;
+            //Modulation
+            uint8_t r = 255, g = 255, b = 255;
+            //Modulate for day/night
+            r *= daynight_colour(game_time, x, y);
+            g *= daynight_colour(game_time, x, y);
+            b *= daynight_colour(game_time, x, y);
+            sf::Color color (r, g, b);
+            //Position & Display
+            projectileTile.setPosition(sf::Vector2f(draw_X, draw_Y));
+            window.draw(projectileTile);
+        }
+    }
+}
+
+void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::CircleShape projectileTile, sf::Text txt_float, sf::Text txt_HUD, bool is_lazy = false)
 {
     window.clear(sf::Color(255, 255, 255));
 
@@ -252,6 +295,7 @@ void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::
     doISOMETRIC(prot, game_time, window, drawSprite, spriteTile);
 
     drawEntities(prot, game_time, window, villagerTile, zombieTile);
+    drawProjectiles(prot, game_time, window, projectileTile);
 
     window.draw(txt_HUD);
 

@@ -71,17 +71,17 @@ double rf_nd (double average, double spread)
 //===================================
 //Angles
 //===================================
-void normaliseAng (float &ang)
+float normaliseAng (float ang)
 {
     if (ang >= 360) { ang -= 360; }
      else if (ang < 0) { ang += 360; }
+    return ang;
 }
 
 float vecToAng (float dir_X, float dir_Y) //Takes a vector, and gives the angle where {0, -1} is 0' (North), {1, 0} is 90' (East)
 {
     float ang = 90 + atan2(dir_Y, dir_X) * (180 / M_PI); //Converted from radians with r * 180/pi
-    normaliseAng(ang);
-    return ang;
+    return normaliseAng(ang);
 }
 
 void angToVec (float rot, float &dir_X, float &dir_Y) //Takes an angle, and gives the vector where 0' (North) is {0, -1}, 90' (East) is {1, 0}

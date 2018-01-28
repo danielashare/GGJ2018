@@ -43,7 +43,7 @@ void getVillagerTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 {
     if (e->frame > 4) { e->frame = 1; }
     //Calculate the angle to show the sprite
-    uint16_t a = e->rot;
+    uint16_t a = normaliseAng(e->rot - 23);
     a /= 45; //Every 45 degrees, the next texture in the sheet is used (eg. 90 becomes 2)
     tex_X = ENTITY_W * e->frame;
     tex_Y = ENTITY_H * a;
@@ -52,7 +52,7 @@ void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 {
     if (e->frame > 4) { e->frame = 1; }
     //Calculate the angle to show the sprite
-    uint16_t a = e->rot;
+    uint16_t a = normaliseAng(e->rot - 23);
     a /= 45; //Every 45 degrees, the next texture in the sheet is used (eg. 90 becomes 2)
     tex_X = ENTITY_W * e->frame;
     tex_Y = ENTITY_H * a;

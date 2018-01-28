@@ -111,7 +111,7 @@ int main ()
 		mouse_pos.x = (float(WINDOW_W) / float(window.getSize().x)) * float(mouse_pos.x);  //
 		mouse_pos.y = (float(WINDOW_H) / float(window.getSize().y)) * float(mouse_pos.y); // Adjust for scaled window
         protag_rot = vecToAng((mouse_pos.x - float(WINDOW_W / 2)) / 2, mouse_pos.y - float(WINDOW_H / 2)) + 45;
-        normaliseAng(protag_rot);
+        protag_rot = normaliseAng(protag_rot);
       //Check keyboard
         float dir_X = 0, dir_Y = 0;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag foward (NW)
@@ -128,10 +128,15 @@ int main ()
         dir_X *= dist;
         dir_Y *= dist;
       //Set protag data
+        if (fabs(dir_X) + fabs(dir_Y) > .1) {
+            entity[0]->had_moved = true;
+            entity[0]->speed = dist / 8;
+        }
         protag_X += dir_X / 10;
         protag_Y += dir_Y / 5;
         entity[0]->pos_X = protag_X;
         entity[0]->pos_Y = protag_Y;
+        entity[0]->rot = protag_rot;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 
@@ -141,6 +146,7 @@ int main ()
             entity[e]->move();
             entity[e]->animate();
         }
+        entity[0]->animate();
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

@@ -12,7 +12,7 @@ const uint8_t GEN_ISLANDS = 8;
 const uint16_t GEN_ISLAND_RAD_MIN = 48;
 const uint16_t GEN_ISLAND_RAD_MAX = 64;
 const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
-const uint8_t GEN_VILLAGES = 32;
+const uint8_t GEN_VILLAGES = 64;
 const uint16_t GEN_VILLAGE_RAD_MIN = 8;
 const uint16_t GEN_VILLAGE_RAD_MAX = 24;
 const uint16_t GEN_GROW_MAP = 4096;
@@ -60,6 +60,13 @@ bool isFoliage (uint8_t sprite_code)
 {
     switch (sprite_code) {
         case 4: case 5: return true;
+        default: return false;
+    }
+}
+bool isSolid (uint8_t sprite_code)
+{
+    switch (sprite_code) {
+        case 1: case 2: return true;
         default: return false;
     }
 }

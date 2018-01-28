@@ -2,7 +2,7 @@
 
 const uint16_t GEN_VILLAGERS = 2048;
 const uint16_t GEN_ZOMBIES = 128;
-const uint8_t ANI_INTERVAL = 30;
+const float ANI_INTERVAL = 2;
 
 
 class Entity {
@@ -16,7 +16,7 @@ class Entity {
     uint8_t frame = 0;
     bool had_moved = true;
 
-    float health = 255, max_health = 255, speed = .01, attack = 1;
+    float health = 255, max_health = 255, speed = .02, attack = 1;
 
     Entity (uint16_t, uint8_t, double, double);
     Entity (); //For empty initialisation
@@ -27,7 +27,7 @@ class Entity {
     void animate ();
 
   private:
-      void tryDir (float, float);
+      bool tryDir (float, float);
       float animate_clock = 0;
 };
 
@@ -46,7 +46,7 @@ Entity::Entity () { }
 void Entity::think ()
 {
   //Loiter
-    if (rb(.1)) { moveTowards(pos_X + ri(-2, 2), pos_Y + ri(-2, 2)); }
+    if (rb(.01) * type+1) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-3, 3)); }
 }
 
 void Entity::moveTowards (uint16_t x, uint16_t y)
@@ -55,10 +55,16 @@ void Entity::moveTowards (uint16_t x, uint16_t y)
     targ_Y = y;
 }
 
-void Entity::tryDir (float dir_X, float dir_Y)
+bool Entity::tryDir (float dir_X, float dir_Y)
 {
-    pos_X += dir_X;
-    pos_Y += dir_Y;
+    float dist = eD_approx(pos_X, pos_Y, pos_X + dir_X, pos_Y + dir_Y);
+    dir_X *= dist * speed;
+    dir_Y *= dist * speed;
+    double new_X = pos_X + dir_X, new_Y = pos_Y + dir_Y;
+    if (!isSolid(getSprite(new_X, new_Y))) {
+        pos_X = new_X;
+        pos_Y = new_Y;
+    }
 }
 
 void Entity::move ()
@@ -67,8 +73,13 @@ void Entity::move ()
         rot = vecToAng(targ_X - pos_X, targ_Y - pos_Y);
         float dir_X, dir_Y;
         angToVec(rot, dir_X, dir_Y);
-        tryDir(speed * dir_X, speed * dir_Y);
-        had_moved = true;
+        if (tryDir(dir_X, dir_Y)) {
+            had_moved = true;
+        } else {
+            frame = 0;
+            targ_X = pos_X;
+            targ_Y = pos_Y;
+        }
     } else {
         frame = 0;
     }
@@ -76,7 +87,8 @@ void Entity::move ()
 
 void Entity::animate ()
 {
-    if (++animate_clock > ANI_INTERVAL) {
+    animate_clock += speed * 4;
+    if (animate_clock > ANI_INTERVAL) {
         animate_clock = 0;
         if (had_moved) { ++frame; }
         had_moved = false;

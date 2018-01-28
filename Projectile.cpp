@@ -26,4 +26,12 @@ void Projectile::move() {
   {
     had_Hit = true;
   }
+  else {
+    Entity* here = entity[getMapEntity(pos_X, pos_Y)];
+    if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
+      had_Hit = true;
+      here->harm();
+      shooter->reward();
+    }
+  }
 }

@@ -11,7 +11,8 @@
 
 const uint16_t MAP_W = 512, MAP_H = 512;
 const uint32_t MAP_A = MAP_W * MAP_H;
-uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
+                            //eeeeeeee eeeeeeee     llaf ffssssbb
+uint32_t map[MAP_W][MAP_H]; //00000000 00000000 00000000 00000000 - 0000000000000000 entity map id, 0000 RESERVED, 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
 uint32_t game_time = 0;
 
 //Constants
@@ -35,32 +36,38 @@ uint8_t getBiome (uint16_t x, uint16_t y) { if (inBounds(x, y)) {
     return map[x][y] & 0x03;
 } }
 void setBiome (uint16_t x, uint16_t y, uint8_t b) { if (inBounds(x, y)) {
-    map[x][y] = (map[x][y] & 0xFFFC) | b;
+    map[x][y] = (map[x][y] & 0xFFFFFFFC) | b;
 } }
 uint8_t getSprite (uint16_t x, uint16_t y) { if (inBounds(x, y)) {
     return (map[x][y] & 0x3C) >> 2;
 } }
 void setSprite (uint16_t x, uint16_t y, uint8_t s) { if (inBounds(x, y)) {
-    map[x][y] = (map[x][y] & 0xFFC3) | (s << 2);
+    map[x][y] = (map[x][y] & 0xFFFFFFC3) | (s << 2);
 } }
 uint8_t getFrame (uint16_t x, uint16_t y) {  if (inBounds(x, y)) {
     return (map[x][y] & 0x1C0) >> 6;
 } }
 void setFrame (uint16_t x, uint16_t y, uint8_t f) { if (inBounds(x, y)) {
-    map[x][y] = (map[x][y] & 0xFE3F) | (f << 6);
+    map[x][y] = (map[x][y] & 0xFFFFFE3F) | (f << 6);
 } }
 bool getAnimated (uint16_t x, uint16_t y) {  if (inBounds(x, y)) {
     return (map[x][y] & 0x200) >> 9;
 } }
 void setAnimated (uint16_t x, uint16_t y, bool a) { if (inBounds(x, y)) {
-    map[x][y] = (map[x][y] & 0xFDFF) | (a << 9);
+    map[x][y] = (map[x][y] & 0xFFFFFDFF) | (a << 9);
 } }
 uint8_t getLux (uint16_t x, uint16_t y) {  if (inBounds(x, y)) {
     return (map[x][y] & 0xC00) >> 10;
 } }
 void setLux (uint16_t x, uint16_t y, uint8_t l, bool append = false) { if (inBounds(x, y)) {
     if (append) { if (getLux(x, y) > l) { return; } }
-    map[x][y] = (map[x][y] & 0xF3FF) | (l << 10);
+    map[x][y] = (map[x][y] & 0xFFFFF3FF) | (l << 10);
+} }
+uint16_t getMapEntity (uint16_t x, uint16_t y) { if (inBounds(x, y)) {
+    return (map[x][y] & 0xFFFF0000) >> 16;
+} }
+void setMapEntity (uint16_t x, uint16_t y, uint16_t e) { if (inBounds(x, y)) {
+    map[x][y] = (map[x][y] & 0x0000FFFF) | (e << 16);
 } }
 
 bool isFoliage (uint8_t sprite_code)

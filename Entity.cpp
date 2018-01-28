@@ -29,6 +29,7 @@ class Entity {
     float health_score = 255, speed = NORMAL_SPEED, power_score = 1;
 
     Entity (uint16_t, uint8_t, double, double);
+    Entity ();
 
     void think (bool);
     void moveTowards (uint16_t, uint16_t);
@@ -55,6 +56,8 @@ Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_
     this->pos_Y = this->targ_X = pos_Y;
     this->animate_clock = ri(0, ANI_INTERVAL);
 }
+
+Entity::Entity () { }
 
 void Entity::attack (Entity* who)
 {

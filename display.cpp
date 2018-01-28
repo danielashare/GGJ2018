@@ -65,7 +65,7 @@ void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 
 void drawBiome (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
 {
-    uint16_t *mapPtr = &map[x][y];
+    uint32_t *mapPtr = &map[x][y];
   //Prepare biome for draw
     //Get biome texture
     uint8_t biome_code;
@@ -111,7 +111,7 @@ void drawBiome (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::
 
 void drawSprite (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &spriteTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
 {
-    uint16_t *mapPtr = &map[x][y];
+    uint32_t *mapPtr = &map[x][y];
     uint8_t sprite_code = getSprite(x, y);
     if (sprite_code) {
       //Prepare sprite for draw

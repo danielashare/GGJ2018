@@ -10,11 +10,8 @@ const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 const uint8_t PROJECTILE_DAMAGE = 32;
-<<<<<<< HEAD
 const float PROJECTILE_SPEED = .5;
-=======
 const uint8_t REWARD_HEALTH = 32;
->>>>>>> 67f3855b73c842fd44777251d525ac582c1778d8
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();

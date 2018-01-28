@@ -29,6 +29,7 @@ int main ()
     sf::Image zombieTexImg;
     sf::Texture zombieTexture;
     sf::Sprite zombieTile;
+    sf::CircleShape projectileTile (5);
   //Load textures/fonts
     if (!fnt_arial.loadFromFile("Assets/arial.ttf"))
     {
@@ -64,6 +65,7 @@ int main ()
     zombieTexture.loadFromImage(zombieTexImg);
     zombieTile.setTexture(zombieTexture);
     zombieTexture.setSmooth(false);
+    projectileTile.setFillColor(sf::Color::Red);
   //Minimap
     mm_tex.create(MAP_W, MAP_H);
     minimap.scale(float(mm_size) / float(MAP_W), float(mm_size) / float(MAP_H));
@@ -151,9 +153,9 @@ int main ()
         prot->rot = prot->rot;
 
       //DISPLAY
-        doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_float, txt_HUD, !(game_time % 50));
+        doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, projectileTile, txt_float, txt_HUD, !(game_time % 50));
 
-      //Entity stuff
+      //Entity & Projectile stuff
         bool is_nighttime = sky_darkness < .4;
         uint16_t ents = 0, humans = 0, zombies = 0;
         for (uint16_t e = 2; e < entity.size(); ++e) {
@@ -166,6 +168,11 @@ int main ()
             ++ents;
             if (ent->type == E_VILLAGER) { ++humans; }
              else if (ent->type == E_ZOMBIE) { ++zombies; }
+        }
+        for (uint16_t p = 0; p < projectile.size(); ++p) {
+            Projectile* proj = projectile[p];
+            if (proj->had_hit) { continue; }
+            proj->move();
         }
         prot->animate();
 

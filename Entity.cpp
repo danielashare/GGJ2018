@@ -14,12 +14,13 @@ const uint8_t PROJECTILE_DAMAGE = 32;
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
 class Projectile;
-std::vector<Projectile*> projectiles = std::vector<Projectile*>();
+std::vector<Projectile*> projectile = std::vector<Projectile*>();
+
 class Projectile {
 public:
   float vel_X, vel_Y;
   double pos_X, pos_Y;
-  bool had_Hit = false;
+  bool had_hit = false;
   Entity* shooter;
 
   void move();
@@ -132,7 +133,7 @@ void Entity::think (bool is_nighttime)
                   if(entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
                   if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
                     if(entity[e]->targetted_at + 50 > game_time) { continue; }
-                    shoot(entity[e]);
+//                    shoot(entity[e]);
                     break;
                   }
                 }
@@ -236,12 +237,12 @@ void Entity::shoot (Entity* victim)
   double dir_X, dir_Y;
   targToVec(this->pos_X, this->pos_Y, victim->pos_X, victim->pos_Y, dir_X, dir_Y);
   float dir_ang = vecToAng(dir_X, dir_Y);
-  projectiles.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
+  projectile.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
 }
 
 void Entity::shootDir ()
 {
-  projectiles.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
+  projectile.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
 }
 
 Projectile::Projectile(double pos_X, double pos_Y, float rot, Entity* shooter) {
@@ -253,15 +254,16 @@ Projectile::Projectile(double pos_X, double pos_Y, float rot, Entity* shooter) {
 
 void Projectile::move() {
   pos_X += vel_X;
+std::cout << std::to_string(vel_X) << std::endl;
   pos_Y += vel_Y;
   if(isSolid(getSprite(pos_X, pos_Y)))
   {
-    had_Hit = true;
+    had_hit = true;
   }
   else {
     Entity* here = entity[getMapEntity(pos_X, pos_Y)];
     if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
-      had_Hit = true;
+      had_hit = true;
       here->harm(PROJECTILE_DAMAGE);
       //shooter->reward();
     }

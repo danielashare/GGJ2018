@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp> //http://www.sfml-dev.org/tutorials/2.4
 #include <iostream> //Terminal
 
-#include "protag.cpp"
 #include "display.cpp"
 
 
@@ -80,6 +79,7 @@ int main ()
         } while (getBiome(x, y) != B_STONE || getSprite(x, y));
         entity.push_back(new Entity(v, 0, x, y));
     }
+    Entity* prot = entity[0];
   //Spawn Zombies
     for (uint16_t z = 0; z < GEN_ZOMBIES; ++z) {
         uint16_t x, y;
@@ -91,9 +91,9 @@ int main ()
     }
   //Move player to suitable location (stone)
     do {
-        protag_X = ri(0, MAP_W);
-        protag_Y = ri(0, MAP_H);
-    } while (getBiome(protag_X, protag_Y) != B_STONE || getSprite(protag_X, protag_Y));
+        prot->pos_X = ri(0, MAP_W);
+        prot->pos_Y = ri(0, MAP_H);
+    } while (getBiome(prot->pos_X, prot->pos_Y) != B_STONE || getSprite(prot->pos_X, prot->pos_Y));
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -110,18 +110,17 @@ int main ()
         sf::Vector2f mouse_pos = sf::Vector2f(sf::Mouse::getPosition(window));
 		mouse_pos.x = (float(WINDOW_W) / float(window.getSize().x)) * float(mouse_pos.x);  //
 		mouse_pos.y = (float(WINDOW_H) / float(window.getSize().y)) * float(mouse_pos.y); // Adjust for scaled window
-        protag_rot = vecToAng((mouse_pos.x - float(WINDOW_W / 2)) / 2, mouse_pos.y - float(WINDOW_H / 2)) + 45;
-        protag_rot = normaliseAng(protag_rot);
+        prot->rot = normaliseAng(vecToAng((mouse_pos.x - float(WINDOW_W / 2)) / 2, mouse_pos.y - float(WINDOW_H / 2)) + 45);
       //Check keyboard
         float dir_X = 0, dir_Y = 0;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { //Move protag foward (NW)
-            angToVec(protag_rot, dir_X, dir_Y);
+            angToVec(prot->rot, dir_X, dir_Y);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) { //Move protag right (NE)
-            angToVec(protag_rot + 90, dir_X, dir_Y);
+            angToVec(prot->rot + 90, dir_X, dir_Y);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { //Move protag backward (SE)
-            angToVec(protag_rot + 180, dir_X, dir_Y);
+            angToVec(prot->rot + 180, dir_X, dir_Y);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
-            angToVec(protag_rot + 270, dir_X, dir_Y);
+            angToVec(prot->rot + 270, dir_X, dir_Y);
         }
       //Speed based on mouse distance from the center
         float dist = eD_approx(WINDOW_W/2, WINDOW_H/2, mouse_pos.x, mouse_pos.y) / (WINDOW_W/2);
@@ -129,18 +128,18 @@ int main ()
         dir_Y *= dist;
       //Set protag data
         if (fabs(dir_X) + fabs(dir_Y) > .1) {
-            entity[0]->had_moved = true;
-            entity[0]->speed = dist / 8;
+            prot->had_moved = true;
+            prot->speed = dist / 8;
         }
-        double new_X = protag_X + (dir_X / 10);
-        double new_Y = protag_Y + (dir_Y / 5);
-        if (entity[0]->tryDir(dir_X, dir_Y)) {
-            entity[0]->pos_X = protag_X = new_X;
-            entity[0]->pos_Y = protag_Y = new_Y;
+        double new_X = prot->pos_X + (dir_X / 10);
+        double new_Y = prot->pos_Y + (dir_Y / 5);
+        if (prot->tryDir(dir_X, dir_Y)) {
+            prot->pos_X = new_X;
+            prot->pos_Y = new_Y;
         }
-        entity[0]->rot = protag_rot;
+        prot->rot = prot->rot;
 
-        doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
+        doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 
       //Entity stuff
         for (uint16_t e = 1; e < entity.size(); ++e) {
@@ -148,7 +147,7 @@ int main ()
             entity[e]->move();
             entity[e]->animate();
         }
-        entity[0]->animate();
+        prot->animate();
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

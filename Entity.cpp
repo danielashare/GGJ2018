@@ -91,15 +91,16 @@ void Entity::moveTowards (uint16_t x, uint16_t y)
 bool Entity::tryDir (float dir_X, float dir_Y)
 {
     float dist = eD_approx(pos_X, pos_Y, pos_X + dir_X, pos_Y + dir_Y);
-    dir_X *= dist * speed;
-    dir_Y *= dist * speed;
-    double new_X = pos_X + dir_X, new_Y = pos_Y + dir_Y;
+    double d_X = dir_X * dist * speed;
+    double d_Y = dir_Y * dist * speed;
+    double new_X = pos_X + d_X, new_Y = pos_Y + d_Y;
     if (!isSolid(getSprite(new_X, new_Y)) && getBiome(new_X, new_Y) != B_WATER) {
         pos_X = new_X;
         pos_Y = new_Y;
         return true;
     } else {
-        pushCrate(new_X, new_Y, dir_X, dir_Y);
+      //Try pushing outwards
+        pushCrate(new_X, new_Y, d_X, d_Y);
         return false;
     }
 }

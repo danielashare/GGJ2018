@@ -61,7 +61,7 @@ void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 
 
 
-void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
+void drawBiome (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
 {
     uint16_t *mapPtr = &map[x][y];
   //Prepare biome for draw
@@ -100,14 +100,14 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
     b *= daynight_colour(game_time, x, y);
     biomeTile.setColor(sf::Color(r, g, b));
     //Modulate if protag pos
-    if (x == (int16_t)protag_X && y == (int16_t)protag_Y) {
+    if (x == (int16_t)prot->pos_X && y == (int16_t)prot->pos_Y) {
         biomeTile.setColor(sf::Color(255, 0, 255));
     }
     //Draw biome
     window.draw(biomeTile);
 }
 
-void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &spriteTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
+void drawSprite (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &spriteTile, uint16_t x, uint16_t y, double draw_X, double draw_Y)
 {
     uint16_t *mapPtr = &map[x][y];
     uint8_t sprite_code = getSprite(x, y);
@@ -137,21 +137,21 @@ void drawSprite (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &sprit
     }
 }
 
-void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(uint32_t, sf::RenderWindow&, sf::Sprite&, uint16_t, uint16_t, double, double), sf::Sprite tile)
+void doISOMETRIC (Entity* prot, uint32_t game_time, sf::RenderWindow &window, void (*drawer)(Entity* prot, uint32_t, sf::RenderWindow&, sf::Sprite&, uint16_t, uint16_t, double, double), sf::Sprite tile)
 {
   //Calculate map crop (as map coords)
     int16_t tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
     tiles_X = (WINDOW_W / TILE_SCALE);
     tiles_Y = (WINDOW_H / TILE_SCALE);
-    camera_X1 = uint16_t(protag_X) - tiles_X/2;
-    camera_Y1 = uint16_t(protag_Y) - tiles_Y ;
+    camera_X1 = uint16_t(prot->pos_X) - tiles_X/2;
+    camera_Y1 = uint16_t(prot->pos_Y) - tiles_Y ;
     camera_X2 = camera_X1 + tiles_X + 2;
     camera_Y2 = camera_Y1 + tiles_Y*2 + 2;
     camera_W = camera_X2 - camera_X1;
     camera_H = camera_Y2 - camera_Y1;
   //Prepare isometric loop
-    float p_X_d = decimal(protag_X);
-    float p_Y_d = decimal(protag_Y);
+    float p_X_d = decimal(prot->pos_X);
+    float p_Y_d = decimal(prot->pos_Y);
     float p_X_D = 1 - p_X_d;
     float p_Y_D = 1 - p_Y_d;
     float protag_offset_X = ( (p_Y_D * TILE_H) + (p_X_D * (TILE_W/2)) );     //
@@ -165,7 +165,7 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
       for (int16_t x = camera_X2; x >= camera_X1; --x) {
           if (draw_X > -TILE_W && draw_X < WINDOW_W + TILE_W && draw_Y > -TILE_H && draw_Y < WINDOW_H + TILE_H) {
             //Prepare and call upon the argument drawer function
-              (*drawer)(game_time, window, tile, x, y, draw_X, draw_Y);
+              (*drawer)(prot, game_time, window, tile, x, y, draw_X, draw_Y);
           }
         //Move half left and half down
           draw_X -= TILE_W / 2;
@@ -179,13 +179,13 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
     }
 }
 
-void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile)
+void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile)
 {
     double tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
     tiles_X = (WINDOW_W / TILE_SCALE);
     tiles_Y = (WINDOW_H / TILE_SCALE);
-    camera_X1 = protag_X - tiles_X/2;
-    camera_Y1 = protag_Y - tiles_Y ;
+    camera_X1 = prot->pos_X - tiles_X/2;
+    camera_Y1 = prot->pos_Y - tiles_Y ;
     camera_X2 = camera_X1 + tiles_X + 2;
     camera_Y2 = camera_Y1 + tiles_Y*2 + 2;
     camera_W = camera_X2 - camera_X1;
@@ -234,20 +234,20 @@ void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite vill
                     break;
             }
 txt_HUD.setPosition(sf::Vector2f(draw_X, draw_Y));
-txt_HUD.setString(std::to_string(uint16_t(entity[e]->health_score)));
+txt_HUD.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
 window.draw(txt_HUD);
         }
     }
 }
 
-void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_HUD, bool is_lazy = false)
+void doDISPLAY (Entity* prot, uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_HUD, bool is_lazy = false)
 {
     window.clear(sf::Color(255, 255, 255));
 
-    doISOMETRIC(game_time, window, drawBiome, biomeTile);
-    doISOMETRIC(game_time, window, drawSprite, spriteTile);
+    doISOMETRIC(prot, game_time, window, drawBiome, biomeTile);
+    doISOMETRIC(prot, game_time, window, drawSprite, spriteTile);
 
-    drawEntities(game_time, window, villagerTile, zombieTile);
+    drawEntities(prot, game_time, window, villagerTile, zombieTile);
 
   //Lazy actions
     if (is_lazy) {
@@ -259,7 +259,7 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
                     setFrame(x, y, (frame < 6 ? frame + 1 : 0));
                 }
               //Render minimap
-                if (x >= protag_X - mm_crosshair && x <= protag_X + mm_crosshair || y >= protag_Y - mm_crosshair && y <= protag_Y + mm_crosshair) {
+                if (x >= prot->pos_X - mm_crosshair && x <= prot->pos_X + mm_crosshair || y >= prot->pos_Y - mm_crosshair && y <= prot->pos_Y + mm_crosshair) {
                     mm[p] = 255;
                     mm[p + 1] = mm[p + 2] = 0;
                     mm[p + 3] = 255;

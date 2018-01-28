@@ -3,6 +3,9 @@
 #include "Entity.cpp"
 
 
+sf::Text txt_HUD;
+
+
 const uint8_t TILE_SCALE = 32;
 const uint8_t TILE_W = 64, TILE_H = 32;
 const uint8_t SPRITE_W = 64, SPRITE_H = 64;
@@ -38,13 +41,21 @@ void getSpriteTex (uint8_t sprite_code, uint16_t x, uint16_t y, uint16_t &tex_X,
 
 void getVillagerTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    tex_X = 0;
-    tex_Y = 0;
+    if (e->frame > 4) { e->frame = 1; }
+    //Calculate the angle to show the sprite
+    uint16_t a = e->rot;
+    a /= 45; //Every 45 degrees, the next texture in the sheet is used (eg. 90 becomes 2)
+    tex_X = ENTITY_W * e->frame;
+    tex_Y = ENTITY_H * a;
 }
 void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 {
-    tex_X = 0;
-    tex_Y = 0;
+    if (e->frame > 4) { e->frame = 1; }
+    //Calculate the angle to show the sprite
+    uint16_t a = e->rot;
+    a /= 45; //Every 45 degrees, the next texture in the sheet is used (eg. 90 becomes 2)
+    tex_X = ENTITY_W * e->frame;
+    tex_Y = ENTITY_H * a;
 }
 
 
@@ -222,6 +233,9 @@ void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite vill
                     window.draw(zombieTile);
                     break;
             }
+txt_HUD.setPosition(sf::Vector2f(draw_X, draw_Y));
+txt_HUD.setString(std::to_string(uint16_t(entity[e]->rot)));
+window.draw(txt_HUD);
         }
     }
 }

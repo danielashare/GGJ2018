@@ -14,7 +14,6 @@ int main ()
 
   //Declare asset thingies
     sf::Font fnt_arial;
-    sf::Text txt_HUD;
     sf::Image biomeTexImg;
     sf::Texture biomeTexture;
     sf::Sprite biomeTile;
@@ -48,6 +47,7 @@ int main ()
         std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
     txt_HUD.setFont(fnt_arial);
+    txt_HUD.setCharacterSize(12);
     biomeTexture.loadFromImage(biomeTexImg);
     biomeTile.setTexture(biomeTexture);
     biomeTexture.setSmooth(false);
@@ -91,9 +91,9 @@ int main ()
     }
   //Move player to suitable location (stone)
     do {
-        entity[0]->pos_X = ri(0, MAP_W);
-        entity[0]->pos_Y = ri(0, MAP_H);
-    } while (getBiome(entity[0]->pos_X, entity[0]->pos_Y));
+        protag_X = ri(0, MAP_W);
+        protag_Y = ri(0, MAP_H);
+    } while (getBiome(protag_X, protag_Y));
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -136,12 +136,10 @@ int main ()
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 
       //Entity stuff
-        bool to_think = !(game_time % 100);
-        for (uint16_t e = 0; e < entity.size(); ++e) {
-            if (to_think) {
-                entity[e]->think();
-            }
+        for (uint16_t e = 1; e < entity.size(); ++e) {
+            if (rb(0.01)) { entity[e]->think(); }
             entity[e]->move();
+            entity[e]->animate();
         }
 
         sf::sleep(sf::milliseconds(10));

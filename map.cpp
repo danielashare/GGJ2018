@@ -78,7 +78,7 @@ void pushCrate (uint16_t x, uint16_t y, double dx, double dy)
     if (fabs(dx) > fabs(dy)) { dx = (dx > 0 ? 1 : -1); dy = 0; } else { dx = 0; dy = (dy > 0 ? 1 : -1); }
     uint16_t px = x + int16_t(dx);
     uint16_t py = y + int16_t(dy);
-    if (getSprite(x, y) == 1 && !getSprite(px, py)) {
+    if (getSprite(x, y) == 1 && !getSprite(px, py) && !getBiome(px, py)) {
         setSprite(x, y, 0);
         setSprite(px, py, 1);
     }
@@ -141,7 +141,7 @@ void genMap ()
             size -= step;
         }
       //Go through all angles and add wall of crates
-        for (float ang = 0; ang < 6.28; ang += .01) {
+        for (float ang = 0; ang < 6.28; ang += .05) { //.05 to cause some gaps
             uint16_t x = village_X + village_radius * sinf(ang);
             uint16_t y = village_Y + village_radius * cosf(ang);
             setSprite(x, y, 2);

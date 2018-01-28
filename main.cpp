@@ -14,6 +14,7 @@ int main ()
 
   //Declare asset thingies
     sf::Font fnt_arial;
+    sf::Text txt_HUD;
     sf::Image biomeTexImg;
     sf::Texture biomeTexture;
     sf::Sprite biomeTile;
@@ -46,6 +47,7 @@ int main ()
     if (!zombieTexImg.loadFromFile("Assets/zombie.png")) {
         std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
+    txt_HUD.setFont(fnt_arial);
     biomeTexture.loadFromImage(biomeTexImg);
     biomeTile.setTexture(biomeTexture);
     biomeTexture.setSmooth(false);
@@ -71,13 +73,10 @@ int main ()
 
   //Generate entities
     entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
-    for(int i = 1; i < 257; i++) {
+    for (int i = 0; i < 100; i++) {
         entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
     }
-    for(int i = 257; i < 513; i++) {
-        entity[i] = new Entity(i, 1, ri(0, MAP_W), ri(0, MAP_H));
-    }
-    number_of_entities = 512;
+    number_of_entities = 100;
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -107,10 +106,10 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(protag_rot + 270, dir_X, dir_Y);
         }
-        protag_X += dir_X / 10;
-        protag_Y += dir_Y / 5;
+        protag_X += dir_X;// / 10;
+        protag_Y += dir_Y;// / 5;
 
-        doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, !(game_time % 50));
+        doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

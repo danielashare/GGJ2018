@@ -163,7 +163,7 @@ void doISOMETRIC (uint32_t game_time, sf::RenderWindow &window, void (*drawer)(u
     }
 }
 
-void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile)
+void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite villagerTile, sf::Sprite zombieTile, sf::Text txt_HUD)
 {
     int16_t tiles_X, tiles_Y, camera_X1, camera_Y1, camera_X2, camera_Y2, camera_W, camera_H;
     tiles_X = (WINDOW_W / TILE_SCALE);
@@ -178,23 +178,20 @@ void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite vill
     for (uint16_t e = 0; e < number_of_entities; ++e) {
         double x = entity[e]->position_X, y = entity[e]->position_Y;
         if (x > camera_X1 && y > camera_Y1 && x < camera_X2 && y < camera_Y2) {
-setBiome(x, y, 0);
             double draw_X, draw_Y;
-            draw_X = (x - camera_X1) * ENTITY_W;
-            draw_Y = (y - camera_Y1);
-std::cout << std::to_string(draw_X) << " -> ";
-float e_X_d = draw_X/2;
-float e_Y_d = draw_Y/2;
-float e_X_D = 1 - e_X_d;
-float e_Y_D = 1 - e_Y_d;
-float e_offset_X = ( (e_Y_d * TILE_H) + (e_X_d + TILE_W) );
-float e_offset_Y = ( (e_Y_d * TILE_H) + (e_X_D + TILE_H) );
-//float e_offset_X = ( (e_Y_D * ENTITY_W) - (e_X_D * (ENTITY_W/2)) );     //
-//float e_offset_Y = ( (e_Y_D * (ENTITY_H/2)) + (e_X_d * (ENTITY_H/2)) ); // Calculate Entity offset
-draw_X = e_offset_X, draw_Y = e_offset_Y;
-std::cout << std::to_string(draw_X) << ", " << std::to_string(draw_Y) << std::endl;
-            //draw_X = ( (-draw_Y * ENTITY_H) + (-draw_X * (ENTITY_W/2)) );     //
-            //draw_Y = ( (-draw_Y * (ENTITY_H/2)) + (draw_X * (ENTITY_H/2)) ); // Calculate protag decimal offset
+            draw_X = (x - camera_X1); //Tiles across X
+            draw_Y = (y - camera_Y1); //Tiles across Y
+txt_HUD.setString(std::to_string(int16_t(draw_X)) + ", " + std::to_string(int16_t(draw_Y)));
+            //In order to position correctly:
+            float e_offset_X = 0, e_offset_Y = 0;
+            //First go right and down according to the Y coord
+            e_offset_X += (draw_Y * (TILE_W/2));
+            e_offset_Y += (draw_Y * (TILE_H/2));
+            //Then go left and down according to the X coord
+            e_offset_X -= ((16 - draw_X) * (TILE_W/2));
+            e_offset_Y += ((16 - draw_X) * (TILE_H/2));
+            draw_X = e_offset_X;
+            draw_Y = e_offset_Y - ENTITY_H;
             uint16_t tex_X, tex_Y;
             switch (entity[e]->type) {
                 case 0: //Villager
@@ -203,7 +200,9 @@ std::cout << std::to_string(draw_X) << ", " << std::to_string(draw_Y) << std::en
                     getVillagerTex(entity[e], tex_X, tex_Y);
                     //Set sprite position
                     villagerTile.setTextureRect(sf::IntRect(tex_X, tex_Y, ENTITY_W, ENTITY_H));
-                    villagerTile.setPosition(sf::Vector2f(draw_X, draw_Y - ENTITY_H/2));
+                    villagerTile.setPosition(sf::Vector2f(draw_X, draw_Y));
+txt_HUD.setPosition(sf::Vector2f(WINDOW_W/2, WINDOW_H/2));
+window.draw(txt_HUD);
                     //Modulation
                     uint8_t r = 255, g = 255, b = 255;
                     //Modulate for day/night
@@ -220,14 +219,14 @@ std::cout << std::to_string(draw_X) << ", " << std::to_string(draw_Y) << std::en
     }
 }
 
-void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, bool is_lazy = false)
+void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeTile, sf::Sprite &spriteTile, sf::Sprite &villagerTile, sf::Sprite &zombieTile, sf::Text txt_HUD, bool is_lazy = false)
 {
     window.clear(sf::Color(255, 255, 255));
 
     doISOMETRIC(game_time, window, drawBiome, biomeTile);
     doISOMETRIC(game_time, window, drawSprite, spriteTile);
 
-    drawEntities(game_time, window, villagerTile, zombieTile);
+    drawEntities(game_time, window, villagerTile, zombieTile, txt_HUD);
 
   //Lazy actions
     if (is_lazy) {

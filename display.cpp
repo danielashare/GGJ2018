@@ -23,7 +23,7 @@ float sky_darkness = 0;
 const uint16_t daynight_cycle = 2000;
 float daynight_colour (uint32_t game_time, uint16_t x, uint16_t y) {
     float lux = getLux(x, y);
-    sky_darkness = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1);
+    sky_darkness = (1 - (fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9));
     lux = sky_darkness + (lux / 5);
     return (lux < 1 ? lux : 1);
 }
@@ -51,6 +51,11 @@ void getVillagerTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 }
 void getZombieTex (Entity* e, uint16_t &tex_X, uint16_t &tex_Y)
 {
+    if (e->is_dead) {
+        tex_X = ENTITY_W * e->frame;
+        tex_Y = ENTITY_H * 8;
+        return;
+    }
     if (e->frame > 4) { e->frame = 1; }
     //Calculate the angle to show the sprite
     uint16_t a = normaliseAng(e->rot - 23);
@@ -236,10 +241,12 @@ void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, s
                     break;
             }
           //Draw floating text
-            txt_float.setPosition(sf::Vector2f(draw_X, draw_Y));
-            txt_float.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
-            txt_float.setFillColor(color);
-            window.draw(txt_float);
+            if (!entity[e]->is_dead) {
+                txt_float.setPosition(sf::Vector2f(draw_X, draw_Y));
+                txt_float.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
+                txt_float.setFillColor(color);
+                window.draw(txt_float);
+            }
         }
     }
 }

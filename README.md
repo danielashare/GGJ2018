@@ -1,14 +1,14 @@
 # Infection: a game made for Global Game Jam 2018
 ## Prerequisites:
 
-`apt install libsfml-dev make
+`apt install libsfml-dev make`
 
 ## Installation:
 
-`git clone https://github.com/danielshare/GGJ2018.git
+`git clone https://github.com/danielshare/GGJ2018.git`
 
-`cd GGJ2018
+`cd GGJ2018`
 
-`make
+`make`
 
-`./GGJ2018
+`./GGJ2018`

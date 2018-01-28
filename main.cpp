@@ -71,12 +71,29 @@ int main ()
   //Generate map
     genMap();
 
-  //Generate entities
-    entity[0] = new Entity(0, 0, ri(0, MAP_W), ri(0, MAP_H));
-    for (int i = 0; i < 100; i++) {
-        entity[i] = new Entity(i, 0, ri(0, MAP_W), ri(0, MAP_H));
+  //Spawn Villagers
+    for (uint16_t v = 0; v < GEN_VILLAGERS; ++v) {
+        uint16_t x, y;
+        do {
+            x = ri(0, MAP_W);
+            y = ri(0, MAP_H);
+        } while (getBiome(x, y) || getSprite(x, y));
+        entity.push_back(new Entity(v, 0, x, y));
     }
-    number_of_entities = 100;
+  //Spawn Zombies
+    for (uint16_t z = 0; z < GEN_ZOMBIES; ++z) {
+        uint16_t x, y;
+        do {
+            x = ri(0, MAP_W);
+            y = ri(0, MAP_H);
+        } while (getBiome(x, y) != 1 || getSprite(x, y));
+        entity.push_back(new Entity(z, 1, x, y));
+    }
+  //Move player to suitable location (stone)
+    do {
+        entity[0]->pos_X = ri(0, MAP_W);
+        entity[0]->pos_Y = ri(0, MAP_H);
+    } while (getBiome(entity[0]->pos_X, entity[0]->pos_Y));
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -106,10 +123,26 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(protag_rot + 270, dir_X, dir_Y);
         }
-        protag_X += dir_X;// / 10;
-        protag_Y += dir_Y;// / 5;
+      //Speed based on mouse distance from the center
+        float dist = eD_approx(WINDOW_W/2, WINDOW_H/2, mouse_pos.x, mouse_pos.y) / (WINDOW_W/2);
+        dir_X *= dist;
+        dir_Y *= dist;
+      //Set protag data
+        protag_X += dir_X / 10;
+        protag_Y += dir_Y / 5;
+        entity[0]->pos_X = protag_X;
+        entity[0]->pos_Y = protag_Y;
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
+
+      //Entity stuff
+        bool to_think = !(game_time % 100);
+        for (uint16_t e = 0; e < entity.size(); ++e) {
+            if (to_think) {
+                entity[e]->think();
+            }
+            entity[e]->move();
+        }
 
         sf::sleep(sf::milliseconds(10));
         ++game_time;

@@ -23,7 +23,7 @@ float sky_darkness = 0;
 const uint16_t daynight_cycle = 2000;
 float daynight_colour (uint32_t game_time, uint16_t x, uint16_t y) {
     float lux = getLux(x, y);
-    sky_darkness = ((fabs(cos(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1);
+    sky_darkness = (1 - (fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9));
     lux = sky_darkness + (lux / 5);
     return (lux < 1 ? lux : 1);
 }

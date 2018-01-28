@@ -163,7 +163,7 @@ void genMap ()
             }
             size -= step;
         }
-      //Go through all angles and add wall of crates
+      //Go through all angles and add a brick wall
         for (float ang = 0; ang < 6.28; ang += .06) { //wide angle to cause some gaps
             uint16_t x = village_X + village_radius * sinf(ang);
             uint16_t y = village_Y + village_radius * cosf(ang);
@@ -194,40 +194,42 @@ void genMap ()
                 }
             }
             uint8_t biome_code = getBiome(x, y);
-          //On empty stone
-            if (biome_code == B_STONE && !getSprite(x, y)) {
+            if ( !getSprite(x, y) && (biome_code == B_STONE && rb(.05)) || (biome_code == B_GRASS && rb(.01))) {
               //Add random fireplace and luminosity
-                if (rb(.01)) {
-                    setSprite(x, y, 3);
-                    setAnimated(x, y, true);
-                    setFrame(x, y, ri(0, 6));
-                    setLux(x+0,y+0,3, true);
-                    setLux(x+1,y+0,2, true);
-                    setLux(x+2,y+0,1, true);
-                    setLux(x-1,y+0,2, true);
-                    setLux(x-2,y+0,1, true);
-                    setLux(x+0,y+1,2, true);
-                    setLux(x+1,y+1,2, true);
-                    setLux(x+2,y+1,1, true);
-                    setLux(x-1,y+1,2, true);
-                    setLux(x-2,y+1,1, true);
-                    setLux(x+0,y+2,1, true);
-                    setLux(x+1,y+2,1, true);
-                    setLux(x-1,y+2,1, true);
-                    setLux(x+0,y-1,2, true);
-                    setLux(x+1,y-1,2, true);
-                    setLux(x+2,y-1,1, true);
-                    setLux(x-1,y-1,2, true);
-                    setLux(x-2,y-1,1, true);
-                    setLux(x+0,y-2,1, true);
-                    setLux(x+1,y-2,1, true);
-                    setLux(x-1,y-2,1, true);
-                  //Add random crate
-              } else if (rb(.1)) {
-                  setSprite(x, y, 1);
-              }
+                setSprite(x, y, 3);
+                setAnimated(x, y, true);
+                setFrame(x, y, ri(0, 6));
+                setLux(x+0,y+0,3, true);
+                setLux(x+1,y+0,2, true);
+                setLux(x+2,y+0,1, true);
+                setLux(x+3,y+0,1, true);
+                setLux(x-1,y+0,2, true);
+                setLux(x-2,y+0,1, true);
+                setLux(x-3,y+0,1, true);
+                setLux(x+0,y+1,2, true);
+                setLux(x+1,y+1,2, true);
+                setLux(x+2,y+1,1, true);
+                setLux(x-1,y+1,2, true);
+                setLux(x-2,y+1,1, true);
+                setLux(x+0,y+2,1, true);
+                setLux(x+1,y+2,1, true);
+                setLux(x-1,y+2,1, true);
+                setLux(x+0,y+3,1, true);
+                setLux(x+0,y-1,2, true);
+                setLux(x+1,y-1,2, true);
+                setLux(x+2,y-1,1, true);
+                setLux(x-1,y-1,2, true);
+                setLux(x-2,y-1,1, true);
+                setLux(x+0,y-2,1, true);
+                setLux(x+0,y-3,1, true);
+                setLux(x+1,y-2,1, true);
+                setLux(x-1,y-2,1, true);
+            }
+            if (biome_code == B_STONE && rb(.05) && !getSprite(x, y)) {
+                setSprite(x, y, 1); //Random crate
+            }
           //Add random foliage
-            } else if (biome_code == B_GRASS) {
+            else if (biome_code == B_GRASS) {
                 if (rb(0.025)) {
                     setSprite(x, y, 4);
                     //setAnimated(x, y, true);

@@ -11,9 +11,9 @@ const uint8_t SHOOT_DISTANCE = 16;
 const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
-const uint8_t PROJECTILE_DAMAGE = 32;
+const uint8_t PROJECTILE_DAMAGE = 16;
 const float PROJECTILE_SPEED = .25;
-const uint8_t REWARD_HEALTH = 1;
+const float REWARD_HEALTH = 1;
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
@@ -108,6 +108,7 @@ void Entity::lashOut ()
 {
     if (target->type != E_ZOMBIE) {
         target->harm(power_score);
+        reward();
     } else {
         attack_timeout = 0;
     }
@@ -162,15 +163,13 @@ void Entity::think (bool is_nighttime)
             } else {
               //Loiter
                 loiter();
-                if (rb()) {
-                  //Find a Villager to attack
-                    for (uint16_t e = 0; e < entity.size(); ++e) {
-                        if (entity[e]->type != E_VILLAGER || entity[e]->is_dead) { continue; }
-                        if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE * (is_nighttime+1)) {
-                            if (entity[e]->targetted_at + 50 > game_time) { continue; }
-                            attack(entity[e]);
-                            break;
-                        }
+              //Find a Villager to attack
+                for (uint16_t e = 0; e < entity.size(); ++e) {
+                    if (entity[e]->type != E_VILLAGER || entity[e]->is_dead) { continue; }
+                    if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE * (is_nighttime+1)) {
+                        if (entity[e]->targetted_at + 50 > game_time) { continue; }
+                        attack(entity[e]);
+                        break;
                     }
                 }
             }
@@ -196,7 +195,7 @@ bool Entity::tryDir (float dir_X, float dir_Y)
         pos_X = new_X;
         pos_Y = new_Y;
         if (check_sprite == S_CAMPFIRE) {
-            harm(64);
+            harm(10);
         }
         return true;
     } else {

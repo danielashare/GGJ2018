@@ -9,7 +9,6 @@ sf::Text txt_float;
 const uint8_t TILE_SCALE = 32;
 const uint8_t TILE_W = 64, TILE_H = 32;
 const uint8_t SPRITE_W = 64, SPRITE_H = 64;
-const uint8_t ENTITY_W = 32, ENTITY_H = 64;
 const uint16_t WINDOW_W = 1024, WINDOW_H = 512;
 
 const uint16_t mm_size = WINDOW_W / 8; //Size of minimap on the screen
@@ -276,7 +275,11 @@ void drawProjectiles (Entity* prot, uint32_t game_time, sf::RenderWindow &window
             uint16_t tex_X, tex_Y;
             //Position & Display
             projectileTile.setPosition(sf::Vector2f(draw_X, draw_Y));
-            projectileTile.setFillColor(sf::Color(255, 0, 0, projectile[p]->opacity * 255));
+            if (projectile[p]->was_successful) {
+                projectileTile.setFillColor(sf::Color(255, 0, 0, projectile[p]->opacity * 255));
+            } else {
+                projectileTile.setFillColor(sf::Color(0, 0, 0, projectile[p]->opacity * 255));
+            }
             window.draw(projectileTile);
         }
     }

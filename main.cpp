@@ -4,6 +4,9 @@
 #include "display.cpp"
 
 
+const uint16_t RELOAD_TIME = 10;
+
+
 int main ()
 {
   //Create the window
@@ -86,7 +89,7 @@ int main ()
             x = ri(0, MAP_W);
             y = ri(0, MAP_H);
         } while (getBiome(x, y) != B_STONE || getSprite(x, y));
-        entity.push_back(new Entity(v, 0, x, y));
+        entity.push_back(new Entity(0, x, y));
     }
     Entity* prot = entity[1];
   //Spawn Zombies
@@ -96,7 +99,7 @@ int main ()
             x = ri(0, MAP_W);
             y = ri(0, MAP_H);
         } while (getBiome(x, y) == B_STONE || getBiome(x, y) == B_WATER || getSprite(x, y));
-        entity.push_back(new Entity(z, 1, x, y));
+        entity.push_back(new Entity(1, x, y));
     }
   //Move player to suitable location (stone)
     do {
@@ -104,6 +107,7 @@ int main ()
         prot->pos_Y = ri(0, MAP_H);
     } while (getBiome(prot->pos_X, prot->pos_Y) != B_STONE || getSprite(prot->pos_X, prot->pos_Y));
 
+    uint64_t prev_shot = 0;
   //Start game-loop
     while (window.isOpen())
     {
@@ -130,8 +134,9 @@ int main ()
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { //Move protag left (SW)
             angToVec(prot->rot + 270, dir_X, dir_Y);
         }
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && prev_shot + RELOAD_TIME < game_time) {
             prot->shootDir();
+            prev_shot = game_time;
         }
       //Speed based on mouse distance from the center
         if (mouse_pos.x > WINDOW_W*.75) { mouse_pos.x = WINDOW_W*.75; }

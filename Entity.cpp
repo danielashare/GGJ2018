@@ -3,6 +3,7 @@
 #define E_VILLAGER 0
 #define E_ZOMBIE   1
 
+const uint8_t ENTITY_W = 32, ENTITY_H = 64;
 const uint16_t GEN_VILLAGERS = 2048;
 const uint16_t GEN_ZOMBIES = 256;
 const float ANI_INTERVAL = 2;
@@ -10,7 +11,7 @@ const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 const uint8_t PROJECTILE_DAMAGE = 32;
-const float PROJECTILE_SPEED = .5;
+const float PROJECTILE_SPEED = .25;
 const uint8_t REWARD_HEALTH = 32;
 
 class Entity;
@@ -23,6 +24,7 @@ public:
   float vel_X, vel_Y;
   double pos_X, pos_Y;
   bool had_hit = false;
+  bool was_successful = false;
   float opacity = 1;
   Entity* shooter;
 
@@ -49,7 +51,7 @@ class Entity {
 
     float health_score = 255, speed = NORMAL_SPEED, power_score = 1;
 
-    Entity (uint16_t, uint8_t, double, double);
+    Entity (uint8_t, double, double);
     Entity ();
 
     void think (bool);
@@ -70,9 +72,9 @@ class Entity {
       float animate_clock = 0;
 };
 
-Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_Y)
+Entity::Entity (uint8_t type, double pos_X, double pos_Y)
 {
-    this->index_in_array = index_in_array;
+    this->index_in_array = entity.size();
     this->type = type;
     this->pos_X = this->targ_X = pos_X;
     this->pos_Y = this->targ_X = pos_Y;
@@ -119,6 +121,7 @@ void Entity::harm (uint8_t damage)
             health_score = MAX_HEALTH;
         } else if (type == E_ZOMBIE) {
             is_dead = true;
+            health_score = 0;
         }
     }
 }
@@ -135,27 +138,16 @@ void Entity::think (bool is_nighttime)
           //Loiter
             if (rb(.4)) { loiter(); }
             // Find zombie to shoot at
-            if (attack_timeout)
-            {
-              --attack_timeout;
-              if(!attack_timeout) {
-                target = NULL;
-              }
-            }
-            else
-            {
               if(rb()) {
                 for (uint16_t e = 0; e < entity.size(); ++e)
                 {
-                  if(entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
+                  if (entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
                   if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
-                    if(entity[e]->targetted_at + 50 > game_time) { continue; }
                     shoot(entity[e]);
                     break;
                   }
                 }
               }
-            }
             break;
         case 1: //Zombie
             if (attack_timeout) {
@@ -278,16 +270,17 @@ Projectile::Projectile(double pos_X, double pos_Y, float rot, Entity* shooter) {
 void Projectile::move() {
   pos_X += vel_X;
   pos_Y += vel_Y;
-  if(isSolid(getSprite(pos_X, pos_Y)))
-  {
+  if(isSolid(getSprite(pos_X, pos_Y))) {
     had_hit = true;
-  }
-  else {
-    Entity* here = entity[getMapEntity(pos_X, pos_Y)];
-    if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
-      had_hit = true;
-      here->harm(PROJECTILE_DAMAGE);
-      shooter->reward();
+  } else {
+    uint16_t e = getMapEntity(uint16_t(pos_X), uint16_t(pos_Y));
+    Entity* here = entity[e];
+    if (here->index_in_array && here->type == E_ZOMBIE && !here->is_dead && here->index_in_array != shooter->index_in_array) {
+        if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
+          had_hit = was_successful = true;
+          here->harm(PROJECTILE_DAMAGE);
+          shooter->reward();
+        }
     }
   }
 }

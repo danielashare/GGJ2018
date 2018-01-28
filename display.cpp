@@ -236,10 +236,11 @@ void drawEntities (Entity* prot, uint32_t game_time, sf::RenderWindow &window, s
                     window.draw(zombieTile);
                     break;
             }
-txt_float.setPosition(sf::Vector2f(draw_X, draw_Y));
-txt_float.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
-txt_float.setFillColor(color);
-window.draw(txt_float);
+          //Draw floating text
+            txt_float.setPosition(sf::Vector2f(draw_X, draw_Y));
+            txt_float.setString(std::to_string(uint16_t(entity[e]->health_score / 255 * 100)));
+            txt_float.setFillColor(color);
+            window.draw(txt_float);
         }
     }
 }
@@ -273,15 +274,9 @@ void drawProjectiles (Entity* prot, uint32_t game_time, sf::RenderWindow &window
             draw_X = e_offset_X - ENTITY_W/2;
             draw_Y = e_offset_Y - ENTITY_H/2;
             uint16_t tex_X, tex_Y;
-            //Modulation
-            uint8_t r = 255, g = 255, b = 255;
-            //Modulate for day/night
-            r *= daynight_colour(game_time, x, y);
-            g *= daynight_colour(game_time, x, y);
-            b *= daynight_colour(game_time, x, y);
-            sf::Color color (r, g, b);
             //Position & Display
             projectileTile.setPosition(sf::Vector2f(draw_X, draw_Y));
+            projectileTile.setFillColor(sf::Color(255, 0, 0, projectile[p]->opacity * 255));
             window.draw(projectileTile);
         }
     }

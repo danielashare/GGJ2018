@@ -29,7 +29,7 @@ int main ()
     sf::Image zombieTexImg;
     sf::Texture zombieTexture;
     sf::Sprite zombieTile;
-    sf::CircleShape projectileTile (5);
+    sf::CircleShape projectileTile (3);
   //Load textures/fonts
     if (!fnt_arial.loadFromFile("Assets/arial.ttf"))
     {
@@ -171,8 +171,13 @@ int main ()
         }
         for (uint16_t p = 0; p < projectile.size(); ++p) {
             Projectile* proj = projectile[p];
-            if (proj->had_hit) { continue; }
-            proj->move();
+            proj->opacity -= .01;
+            if (proj->opacity <= 0) {
+                projectile.erase(projectile.begin() + p);
+                --p;
+                continue;
+            }
+            if (!proj->had_hit) { proj->move(); }
         }
         prot->animate();
 

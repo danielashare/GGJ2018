@@ -10,6 +10,7 @@ const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 const uint8_t PROJECTILE_DAMAGE = 32;
+const float PROJECTILE_SPEED = .5;
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
@@ -21,10 +22,12 @@ public:
   float vel_X, vel_Y;
   double pos_X, pos_Y;
   bool had_hit = false;
+  float opacity = 1;
   Entity* shooter;
 
   void move();
   Projectile(double, double, float, Entity*);
+  ~Projectile();
 
 };
 
@@ -133,7 +136,7 @@ void Entity::think (bool is_nighttime)
                   if(entity[e]->type != E_ZOMBIE || entity[e]->is_dead) { continue; }
                   if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
                     if(entity[e]->targetted_at + 50 > game_time) { continue; }
-//                    shoot(entity[e]);
+                    shoot(entity[e]);
                     break;
                   }
                 }
@@ -245,16 +248,21 @@ void Entity::shootDir ()
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
 }
 
+
+
+
+
 Projectile::Projectile(double pos_X, double pos_Y, float rot, Entity* shooter) {
   this->pos_X = pos_X;
   this->pos_Y = pos_Y;
   this->shooter = shooter;
   angToVec(rot, vel_X, vel_Y);
+  vel_X *= PROJECTILE_SPEED;
+  vel_Y *= PROJECTILE_SPEED;
 }
 
 void Projectile::move() {
   pos_X += vel_X;
-std::cout << std::to_string(vel_X) << std::endl;
   pos_Y += vel_Y;
   if(isSolid(getSprite(pos_X, pos_Y)))
   {

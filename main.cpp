@@ -93,7 +93,7 @@ int main ()
     do {
         protag_X = ri(0, MAP_W);
         protag_Y = ri(0, MAP_H);
-    } while (getBiome(protag_X, protag_Y));
+    } while (getBiome(protag_X, protag_Y) || getSprite(protag_X, protag_Y));
 
   //Start game-loop
     uint32_t game_time = 0;
@@ -132,12 +132,13 @@ int main ()
             entity[0]->had_moved = true;
             entity[0]->speed = dist / 8;
         }
-        protag_X += dir_X / 10;
-        protag_Y += dir_Y / 5;
-        entity[0]->pos_X = protag_X;
-        entity[0]->pos_Y = protag_Y;
+        double new_X = protag_X + (dir_X / 10);
+        double new_Y = protag_Y + (dir_Y / 5);
+        if (entity[0]->tryDir(dir_X, dir_Y)) {
+            entity[0]->pos_X = protag_X = new_X;
+            entity[0]->pos_Y = protag_Y = new_Y;
+        }
         entity[0]->rot = protag_rot;
-        entity[0]->tryDir(dir_X, dir_Y);
 
         doDISPLAY(game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 

@@ -65,8 +65,7 @@ bool Entity::tryDir (float dir_X, float dir_Y)
         pos_X = new_X;
         pos_Y = new_Y;
     } else {
-        int8_t dx = (dir_X > 0 ? 1 : -1), dy = (dir_Y > 0 ? 1 : -1);
-        pushCrate(new_X, new_Y, dx, dy);
+        pushCrate(new_X, new_Y, dir_X, dir_Y);
     }
 }
 

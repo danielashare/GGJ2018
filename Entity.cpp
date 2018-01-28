@@ -8,6 +8,7 @@ const uint16_t GEN_ZOMBIES = 256;
 const float ANI_INTERVAL = 2;
 const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
+const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 
 
 class Entity {
@@ -24,7 +25,7 @@ class Entity {
 
     uint8_t attack_timeout = 0;
 
-    float health_score = 255, speed = .02, power_score = 1;
+    float health_score = 255, speed = NORMAL_SPEED, power_score = 1;
 
     Entity (uint16_t, uint8_t, double, double);
 
@@ -57,7 +58,7 @@ Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_
 void Entity::attack (Entity* who)
 {
     target = who;
-    speed *= 4;
+    speed = ATTACK_SPEED;
     attack_timeout = 4;
 }
 
@@ -100,7 +101,7 @@ void Entity::think (bool is_nighttime)
                 --attack_timeout;
                 if (!attack_timeout) { //Stop attacking
                     target = NULL;
-                    speed = .02;
+                    speed = NORMAL_SPEED;
                 }
             } else {
               //Loiter

@@ -85,7 +85,7 @@ void Entity::attack (Entity* who)
     attack_timeout = 4;
 }
 
-Entity::reward()
+void Entity::reward()
 {
   if(this->health_score + REWARD_HEALTH > MAX_HEALTH)
   {

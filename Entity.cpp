@@ -132,9 +132,13 @@ bool Entity::tryDir (float dir_X, float dir_Y)
     double d_Y = dir_Y * dist * speed;
     double new_X = pos_X + d_X, new_Y = pos_Y + d_Y;
     double check_X = new_X + dir_X, check_Y = new_Y + dir_Y;
-    if (!isSolid(getSprite(check_X, check_Y)) && getBiome(check_X, check_Y) != B_WATER) {
+    uint8_t check_sprite = getSprite(check_X, check_Y);
+    if (!isSolid(check_sprite) && getBiome(check_X, check_Y) != B_WATER && !(type == E_VILLAGER && check_sprite == S_CAMPFIRE)) {
         pos_X = new_X;
         pos_Y = new_Y;
+        if (check_sprite == S_CAMPFIRE) {
+            harm(1);
+        }
         return true;
     } else {
       //Try pushing outwards

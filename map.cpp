@@ -7,6 +7,8 @@
 #define B_GRASS 2
 #define B_SAND  3
 
+#define S_CAMPFIRE 3
+
 const uint16_t MAP_W = 512, MAP_H = 512;
 const uint32_t MAP_A = MAP_W * MAP_H;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
@@ -16,9 +18,9 @@ const uint8_t GEN_ISLANDS = 4;
 const uint16_t GEN_ISLAND_RAD_MIN = 48;
 const uint16_t GEN_ISLAND_RAD_MAX = 128;
 const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
-const uint8_t GEN_VILLAGES = 32;
+const uint8_t GEN_VILLAGES = 64;
 const uint16_t GEN_VILLAGE_RAD_MIN = 8;
-const uint16_t GEN_VILLAGE_RAD_MAX = 24;
+const uint16_t GEN_VILLAGE_RAD_MAX = 16;
 const uint16_t GEN_GROW_MAP = 4096;
 const uint16_t MAP_GROW_SPEED = 128;
 const uint16_t MAP_DEATH_SPEED = 32;

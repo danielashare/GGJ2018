@@ -138,32 +138,38 @@ void genMap ()
                 setSprite(x, y, 0);
             }
             uint8_t biome_code = getBiome(x, y);
-          //Add random fireplace and luminosity on stone
-            if (!biome_code && !getSprite(x, y) && rb(.01)) {
-                setSprite(x, y, 3);
-                setAnimated(x, y, true);
-                setFrame(x, y, ri(0, 6));
-                setLux(x+0,y+0,3, true);
-                setLux(x+1,y+0,2, true);
-                setLux(x+2,y+0,1, true);
-                setLux(x-1,y+0,2, true);
-                setLux(x-2,y+0,1, true);
-                setLux(x+0,y+1,2, true);
-                setLux(x+1,y+1,2, true);
-                setLux(x+2,y+1,1, true);
-                setLux(x-1,y+1,2, true);
-                setLux(x-2,y+1,1, true);
-                setLux(x+0,y+2,1, true);
-                setLux(x+1,y+2,1, true);
-                setLux(x-1,y+2,1, true);
-                setLux(x+0,y-1,2, true);
-                setLux(x+1,y-1,2, true);
-                setLux(x+2,y-1,1, true);
-                setLux(x-1,y-1,2, true);
-                setLux(x-2,y-1,1, true);
-                setLux(x+0,y-2,1, true);
-                setLux(x+1,y-2,1, true);
-                setLux(x-1,y-2,1, true);
+          //On empty stone
+            if (!biome_code && !getSprite(x, y)) {
+              //Add random fireplace and luminosity
+                if (rb(.01)) {
+                    setSprite(x, y, 3);
+                    setAnimated(x, y, true);
+                    setFrame(x, y, ri(0, 6));
+                    setLux(x+0,y+0,3, true);
+                    setLux(x+1,y+0,2, true);
+                    setLux(x+2,y+0,1, true);
+                    setLux(x-1,y+0,2, true);
+                    setLux(x-2,y+0,1, true);
+                    setLux(x+0,y+1,2, true);
+                    setLux(x+1,y+1,2, true);
+                    setLux(x+2,y+1,1, true);
+                    setLux(x-1,y+1,2, true);
+                    setLux(x-2,y+1,1, true);
+                    setLux(x+0,y+2,1, true);
+                    setLux(x+1,y+2,1, true);
+                    setLux(x-1,y+2,1, true);
+                    setLux(x+0,y-1,2, true);
+                    setLux(x+1,y-1,2, true);
+                    setLux(x+2,y-1,1, true);
+                    setLux(x-1,y-1,2, true);
+                    setLux(x-2,y-1,1, true);
+                    setLux(x+0,y-2,1, true);
+                    setLux(x+1,y-2,1, true);
+                    setLux(x-1,y-2,1, true);
+                  //Add random crate
+              } else if (rb(.1)) {
+                  setSprite(x, y, 1);
+              }
           //Add random foliage
             } else if (biome_code == 1) {
                 if (rb(0.025)) {

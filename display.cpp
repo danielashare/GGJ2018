@@ -75,7 +75,7 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
     //Modulate biome
     uint8_t r = 255, g = 255, b = 255;
     switch (biome_code) {
-        case 0: //Stone
+        case B_STONE: //Stone
         {
             uint8_t c = pi((x*y), 0, 20);
             r = 235 + c;
@@ -83,12 +83,12 @@ void drawBiome (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
             b = 235 + c;
         }
             break;
-        case 1: //Grass
+        case B_GRASS: //Grass
             r = 210 + fabs( sin(x * y / 20) ) * 40;
             g = 225 + fabs( sin(x * y / 33) ) * 30;
             b = 255;
             break;
-        case 3: //Water
+        case B_WATER: //Water
             r = 255;
             g = 255;
             b = 200 + fabs( sin(((x * y / 20) + ((float)game_time / 100))) ) * 55;
@@ -234,7 +234,7 @@ void drawEntities (uint32_t game_time, sf::RenderWindow &window, sf::Sprite vill
                     break;
             }
 txt_HUD.setPosition(sf::Vector2f(draw_X, draw_Y));
-txt_HUD.setString(std::to_string(uint16_t(entity[e]->rot)));
+txt_HUD.setString(std::to_string(uint16_t(entity[e]->health_score)));
 window.draw(txt_HUD);
         }
     }
@@ -281,10 +281,10 @@ void doDISPLAY (uint32_t game_time, sf::RenderWindow &window, sf::Sprite &biomeT
                         }
                     } else {
                         switch (biome_code) {
-                            case 0: c = sf::Color(100, 64, 0); break; //Stone
-                            case 1: c = sf::Color(0, 128, 0); break; //Grass
-                            case 2: c = sf::Color::Yellow; break; //Sand
-                            case 3: c = sf::Color::Blue; break; //Water
+                            case B_WATER: c = sf::Color::Blue; break;
+                            case B_STONE: c = sf::Color(100, 64, 0); break;
+                            case B_GRASS: c = sf::Color(0, 128, 0); break;
+                            case B_SAND: c = sf::Color::Yellow; break;
                         }
                     }
                     mm[p]     = c.r;

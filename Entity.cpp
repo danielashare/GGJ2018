@@ -19,7 +19,7 @@ class Entity {
 
     uint8_t attack_timeout = 0;
 
-    float health = 255, max_health = 255, speed = .02, power = 1;
+    float health_score = 255, speed = .02, power_score = 1;
 
     Entity (uint16_t, uint8_t, double, double);
     Entity (); //For empty initialisation
@@ -52,7 +52,7 @@ Entity::Entity () { }
 void Entity::attack (Entity* who)
 {
     target = who;
-    speed *= 3;
+    speed *= 4;
     attack_timeout = 2;
 }
 
@@ -94,7 +94,7 @@ bool Entity::tryDir (float dir_X, float dir_Y)
     dir_X *= dist * speed;
     dir_Y *= dist * speed;
     double new_X = pos_X + dir_X, new_Y = pos_Y + dir_Y;
-    if (!isSolid(getSprite(new_X, new_Y)) && getBiome(new_X, new_Y) != 3) {
+    if (!isSolid(getSprite(new_X, new_Y)) && getBiome(new_X, new_Y) != B_WATER) {
         pos_X = new_X;
         pos_Y = new_Y;
         return true;

@@ -77,7 +77,7 @@ int main ()
         do {
             x = ri(0, MAP_W);
             y = ri(0, MAP_H);
-        } while (getBiome(x, y) || getSprite(x, y));
+        } while (getBiome(x, y) != B_STONE || getSprite(x, y));
         entity.push_back(new Entity(v, 0, x, y));
     }
   //Spawn Zombies
@@ -86,14 +86,14 @@ int main ()
         do {
             x = ri(0, MAP_W);
             y = ri(0, MAP_H);
-        } while (getBiome(x, y) != 1 || getSprite(x, y));
+        } while (getBiome(x, y) == B_STONE || getSprite(x, y));
         entity.push_back(new Entity(z, 1, x, y));
     }
   //Move player to suitable location (stone)
     do {
         protag_X = ri(0, MAP_W);
         protag_Y = ri(0, MAP_H);
-    } while (getBiome(protag_X, protag_Y) || getSprite(protag_X, protag_Y));
+    } while (getBiome(protag_X, protag_Y) != B_STONE || getSprite(protag_X, protag_Y));
 
   //Start game-loop
     uint32_t game_time = 0;

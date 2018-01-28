@@ -154,7 +154,7 @@ void genMap ()
             size -= step;
         }
       //Go through all angles and add wall of crates
-        for (float ang = 0; ang < 6.28; ang += .05) { //.05 to cause some gaps
+        for (float ang = 0; ang < 6.28; ang += .06) { //wide angle to cause some gaps
             uint16_t x = village_X + village_radius * sinf(ang);
             uint16_t y = village_Y + village_radius * cosf(ang);
             setSprite(x, y, 2);

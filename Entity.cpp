@@ -203,6 +203,7 @@ void Entity::move ()
         }
         frame = 0;
     }
+    setMapEntity(uint16_t(pos_X), uint16_t(pos_Y), index_in_array);
 }
 
 void Entity::animate ()

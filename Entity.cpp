@@ -24,6 +24,7 @@ class Entity {
     bool had_moved = true;
 
     uint8_t attack_timeout = 0;
+    uint32_t targetted_at = 0; //Last time this Entity was targetted
 
     float health_score = 255, speed = NORMAL_SPEED, power_score = 1;
 
@@ -58,6 +59,7 @@ Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_
 void Entity::attack (Entity* who)
 {
     target = who;
+    target->targetted_at = game_time;
     speed = ATTACK_SPEED;
     attack_timeout = 4;
 }
@@ -105,13 +107,16 @@ void Entity::think (bool is_nighttime)
                 }
             } else {
               //Loiter
-                if (rb(.8)) { loiter(); }
-              //Find a Villager to attack
-                for (uint16_t e = 0; e < entity.size(); ++e) {
-                    if (entity[e]->type != E_VILLAGER || entity[e]->is_dead) { continue; }
-                    if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE * (is_nighttime+1)) {
-                        attack(entity[e]);
-                        break;
+                loiter();
+                if (rb()) {
+                  //Find a Villager to attack
+                    for (uint16_t e = 0; e < entity.size(); ++e) {
+                        if (entity[e]->type != E_VILLAGER || entity[e]->is_dead) { continue; }
+                        if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE * (is_nighttime+1)) {
+                            if (entity[e]->targetted_at + 50 > game_time) { continue; }
+                            attack(entity[e]);
+                            break;
+                        }
                     }
                 }
             }

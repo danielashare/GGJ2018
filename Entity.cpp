@@ -3,6 +3,7 @@
 const uint16_t GEN_VILLAGERS = 2048;
 const uint16_t GEN_ZOMBIES = 128;
 const float ANI_INTERVAL = 2;
+const uint8_t ATTACK_DISTANCE = 8;
 
 
 class Entity {
@@ -16,7 +17,9 @@ class Entity {
     uint8_t frame = 0;
     bool had_moved = true;
 
-    float health = 255, max_health = 255, speed = .02, attack = 1;
+    uint8_t attack_timeout = 0;
+
+    float health = 255, max_health = 255, speed = .02, power = 1;
 
     Entity (uint16_t, uint8_t, double, double);
     Entity (); //For empty initialisation
@@ -28,8 +31,12 @@ class Entity {
     void animate ();
 
   private:
+      void attack (Entity*);
+      Entity* target;
       float animate_clock = 0;
 };
+
+std::vector<Entity*> entity = std::vector<Entity*>();
 
 Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_Y)
 {
@@ -42,11 +49,37 @@ Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_
 
 Entity::Entity () { }
 
+void Entity::attack (Entity* who)
+{
+    target = who;
+    speed *= 3;
+    attack_timeout = 2;
+}
 
 void Entity::think ()
 {
-  //Loiter
-    if (rb(.01) * type+1) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-3, 3)); }
+    switch (type) {
+        case 0: //Villager
+          //Loiter
+            if (rb(.02)) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-3, 3)); }
+            break;
+        case 1: //Zombie
+            if (attack_timeout) {
+                --attack_timeout;
+            } else {
+                speed = .02;
+              //Loiter
+                if (rb(.03)) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-4, 4)); }
+              //Find a Villager to attack
+                for (uint16_t e = 0; e < entity.size(); ++e) {
+                    if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
+                        attack(entity[e]);
+                        break;
+                    }
+                }
+            }
+            break;
+    }
 }
 
 void Entity::moveTowards (uint16_t x, uint16_t y)
@@ -73,6 +106,10 @@ bool Entity::tryDir (float dir_X, float dir_Y)
 
 void Entity::move ()
 {
+    if (attack_timeout) {
+        targ_X = target->pos_X;
+        targ_Y = target->pos_Y;
+    }
     if (abs(uint16_t(pos_X + .5) - targ_X) || abs(uint16_t(pos_Y + .5) - targ_Y)) { //Need to move?
         rot = vecToAng(targ_X - pos_X, targ_Y - pos_Y);
         float dir_X, dir_Y;
@@ -98,5 +135,3 @@ void Entity::animate ()
         had_moved = false;
     }
 }
-
-std::vector<Entity*> entity = std::vector<Entity*>();

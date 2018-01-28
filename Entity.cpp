@@ -61,11 +61,13 @@ bool Entity::tryDir (float dir_X, float dir_Y)
     dir_X *= dist * speed;
     dir_Y *= dist * speed;
     double new_X = pos_X + dir_X, new_Y = pos_Y + dir_Y;
-    if (!isSolid(getSprite(new_X, new_Y))) {
+    if (!isSolid(getSprite(new_X, new_Y)) && getBiome(new_X, new_Y) != 3) {
         pos_X = new_X;
         pos_Y = new_Y;
+        return true;
     } else {
         pushCrate(new_X, new_Y, dir_X, dir_Y);
+        return false;
     }
 }
 

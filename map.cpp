@@ -8,11 +8,11 @@ const uint32_t MAP_A = MAP_W * MAP_H;
 uint16_t map[MAP_W][MAP_H]; //00000000-00000000 - 00 luminosity, 0 animated, 000 frame, 0000 sprite, 00 biome
 
 //Constants
-const uint8_t GEN_ISLANDS = 8;
+const uint8_t GEN_ISLANDS = 4;
 const uint16_t GEN_ISLAND_RAD_MIN = 48;
 const uint16_t GEN_ISLAND_RAD_MAX = 64;
 const uint8_t GEN_ISLAND_RES = 4; //'resolution' of an island - how many blobs make it up
-const uint8_t GEN_VILLAGES = 64;
+const uint8_t GEN_VILLAGES = 32;
 const uint16_t GEN_VILLAGE_RAD_MIN = 8;
 const uint16_t GEN_VILLAGE_RAD_MAX = 24;
 const uint16_t GEN_GROW_MAP = 4096;
@@ -97,14 +97,16 @@ void genMap ()
       //Calc island size and pos
         const uint16_t island_radius = ri(GEN_ISLAND_RAD_MIN, GEN_ISLAND_RAD_MAX);
         uint16_t island_X, island_Y;
-        random_coord(MAP_W, MAP_H, island_X, island_Y);
+        do {
+            random_coord(MAP_W, MAP_H, island_X, island_Y);
+        } while (island_X < island_radius || island_Y < island_radius || island_X > MAP_W - island_radius || island_Y > MAP_H - island_radius);
       //Calc blob size and pos
         uint16_t blob_X = island_X + ri(island_radius / 2, island_radius);
         uint16_t blob_Y = island_Y + ri(island_radius / 2, island_radius);
 
         for (uint8_t b = 0; b < GEN_ISLAND_RES; ++b) { //For each blob in the island
-            uint16_t blob_X = island_X + ri(0, island_radius * 2);
-            uint16_t blob_Y = island_Y + ri(0, island_radius * 2);
+            uint16_t blob_X = island_X + ri(-island_radius, island_radius);
+            uint16_t blob_Y = island_Y + ri(-island_radius, island_radius);
           //Go through all angles from 0 to 2 * PI radians, in an ever-smaller circle (size), to fill the blob
             float size = 1.0;
             const float step = .005;
@@ -117,6 +119,13 @@ void genMap ()
                     setBiome(x, y, 1);
                 }
                 size -= step;
+            }
+          //Go through all angles and add a coast of sand
+            for (float ang = 0; ang < 6.28; ang += .01) {
+                uint16_t x = blob_X + island_radius * sinf(ang);
+                uint16_t y = blob_Y + island_radius * cosf(ang);
+              //Place some land there
+                setBiome(x, y, 2);
             }
         }
     }
@@ -154,9 +163,21 @@ void genMap ()
           //Set animation properties (idk why I even have to do this)
             setFrame(x, y, 0);
             setAnimated(x, y, false);
-          //Remove all brick walls surrounded by stone biome (where village blobs have overlapped)
+          //Prune strays
+            //Remove all brick walls surrounded by stone biome (where village blobs have overlapped)
             if (getSprite(x, y) == 2 && !getBiome(x+1, y) && !getBiome(x-1, y) && !getBiome(x, y+1) && !getBiome(x, y-1)) {
                 setSprite(x, y, 0);
+            }
+            //Remove all sand not touching water (where island blobs have overlapped)
+            if (getBiome(x, y) == 2) {
+                bool wet = false;
+                wet |= getBiome(x+1, y) == 3;
+                wet |= getBiome(x-1, y) == 3;
+                wet |= getBiome(x, y+1) == 3;
+                wet |= getBiome(x, y-1) == 3;
+                if (!wet) {
+                    setBiome(x, y, 1);
+                }
             }
             uint8_t biome_code = getBiome(x, y);
           //On empty stone
@@ -200,6 +221,10 @@ void genMap ()
                     setSprite(x, y, 5);
                     //setAnimated(x, y, true);
                 }
+            }
+          //Add random brick
+            if (rb(0.005) && getBiome(x, y) != 3) {
+                setSprite(x, y, 2);
             }
         }
     }

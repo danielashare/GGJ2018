@@ -20,10 +20,12 @@ sf::Uint8* mm = new sf::Uint8[mm_len]; //Pixel data of the minimap
 sf::Texture mm_tex;
 sf::RectangleShape minimap (sf::Vector2f(MAP_W, MAP_H));
 
+float sky_darkness = 0;
 const uint16_t daynight_cycle = 2000;
 float daynight_colour (uint32_t game_time, uint16_t x, uint16_t y) {
     float lux = getLux(x, y);
-    lux = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1) + (lux / 5);
+    sky_darkness = ((fabs(sin(float(game_time + daynight_cycle) / daynight_cycle)) * .9) + .1);
+    lux = sky_darkness + (lux / 5);
     return (lux < 1 ? lux : 1);
 }
 

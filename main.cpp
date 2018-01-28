@@ -123,6 +123,8 @@ int main ()
             angToVec(prot->rot + 270, dir_X, dir_Y);
         }
       //Speed based on mouse distance from the center
+        if (mouse_pos.x > WINDOW_W*.75) { mouse_pos.x = WINDOW_W*.75; }
+        if (mouse_pos.x < WINDOW_W*.25) { mouse_pos.x = WINDOW_W*.25; }
         float dist = eD_approx(WINDOW_W/2, WINDOW_H/2, mouse_pos.x, mouse_pos.y) / (WINDOW_W/2);
         dir_X *= dist;
         dir_Y *= dist;
@@ -131,8 +133,8 @@ int main ()
             prot->had_moved = true;
             prot->speed = dist / 8;
         }
-        double new_X = prot->pos_X + (dir_X / 10);
-        double new_Y = prot->pos_Y + (dir_Y / 5);
+        double new_X = prot->pos_X + dir_X/6;
+        double new_Y = prot->pos_Y + dir_Y/6;
         if (prot->tryDir(dir_X, dir_Y)) {
             prot->pos_X = new_X;
             prot->pos_Y = new_Y;
@@ -142,10 +144,13 @@ int main ()
         doDISPLAY(prot, game_time, window, biomeTile, spriteTile, villagerTile, zombieTile, txt_HUD, !(game_time % 50));
 
       //Entity stuff
+        bool is_nighttime = sky_darkness < .4;
         for (uint16_t e = 1; e < entity.size(); ++e) {
-            if (rb(0.01)) { entity[e]->think(); }
-            entity[e]->move();
-            entity[e]->animate();
+            Entity* ent = entity[e];
+            if (ent->is_dead) { continue; }
+            if (rb(0.01)) { ent->think(is_nighttime); }
+            ent->move();
+            ent->animate();
         }
         prot->animate();
 

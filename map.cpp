@@ -217,7 +217,7 @@ void genMap ()
                   setSprite(x, y, 1);
               }
           //Add random foliage
-            } else if (biome_code == 1) {
+            } else if (biome_code == B_GRASS) {
                 if (rb(0.025)) {
                     setSprite(x, y, 4);
                     //setAnimated(x, y, true);

@@ -1,15 +1,20 @@
 
 
+#define E_VILLAGER 0
+#define E_ZOMBIE   1
+
 const uint16_t GEN_VILLAGERS = 2048;
-const uint16_t GEN_ZOMBIES = 128;
+const uint16_t GEN_ZOMBIES = 256;
 const float ANI_INTERVAL = 2;
 const uint8_t ATTACK_DISTANCE = 8;
+const uint8_t MAX_HEALTH = 255;
 
 
 class Entity {
   public:
     uint8_t type; // 0 Villager, 1 Zombie
     uint16_t index_in_array;
+    bool is_dead = false;
 
     double pos_X = 0, pos_Y = 0; // Entity position
     uint16_t targ_X = 0, targ_Y = 0; //Target position
@@ -22,17 +27,19 @@ class Entity {
     float health_score = 255, speed = .02, power_score = 1;
 
     Entity (uint16_t, uint8_t, double, double);
-    Entity (); //For empty initialisation
 
-    void think ();
+    void think (bool);
     void moveTowards (uint16_t, uint16_t);
     bool tryDir (float, float);
     void move ();
+    void harm (uint8_t);
     void animate ();
 
   private:
+      void loiter ();
       void attack (Entity*);
-      Entity* target;
+      void lashOut ();
+      Entity* target = NULL;
       float animate_clock = 0;
 };
 
@@ -47,32 +54,57 @@ Entity::Entity (uint16_t index_in_array, uint8_t type, double pos_X, double pos_
     this->animate_clock = ri(0, ANI_INTERVAL);
 }
 
-Entity::Entity () { }
-
 void Entity::attack (Entity* who)
 {
     target = who;
     speed *= 4;
-    attack_timeout = 2;
+    attack_timeout = 4;
 }
 
-void Entity::think ()
+void Entity::lashOut ()
+{
+    target->harm(power_score);
+}
+
+void Entity::harm (uint8_t damage)
+{
+    health_score -= damage;
+    if (health_score < 0) {
+        if (type == E_VILLAGER) {
+            type = E_ZOMBIE;
+            health_score = MAX_HEALTH;
+        } else if (type == E_ZOMBIE) {
+            is_dead = true;
+        }
+    }
+}
+
+void Entity::loiter ()
+{
+    moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-3, 3));
+}
+
+void Entity::think (bool is_nighttime)
 {
     switch (type) {
         case 0: //Villager
           //Loiter
-            if (rb(.02)) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-3, 3)); }
+            if (rb(.4)) { loiter(); }
             break;
         case 1: //Zombie
             if (attack_timeout) {
                 --attack_timeout;
+                if (!attack_timeout) { //Stop attacking
+                    target = NULL;
+                    speed = .02;
+                }
             } else {
-                speed = .02;
               //Loiter
-                if (rb(.03)) { moveTowards(pos_X + ri(-3, 3), pos_Y + ri(-4, 4)); }
+                if (rb(.8)) { loiter(); }
               //Find a Villager to attack
                 for (uint16_t e = 0; e < entity.size(); ++e) {
-                    if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE) {
+                    if (entity[e]->type != E_VILLAGER || entity[e]->is_dead) { continue; }
+                    if (eD_approx(pos_X, pos_Y, entity[e]->pos_X, entity[e]->pos_Y) < ATTACK_DISTANCE * (is_nighttime+1)) {
                         attack(entity[e]);
                         break;
                     }
@@ -94,13 +126,16 @@ bool Entity::tryDir (float dir_X, float dir_Y)
     double d_X = dir_X * dist * speed;
     double d_Y = dir_Y * dist * speed;
     double new_X = pos_X + d_X, new_Y = pos_Y + d_Y;
-    if (!isSolid(getSprite(new_X, new_Y)) && getBiome(new_X, new_Y) != B_WATER) {
+    double check_X = new_X + dir_X, check_Y = new_Y + dir_Y;
+    if (!isSolid(getSprite(check_X, check_Y)) && getBiome(check_X, check_Y) != B_WATER) {
         pos_X = new_X;
         pos_Y = new_Y;
         return true;
     } else {
       //Try pushing outwards
-        pushCrate(new_X, new_Y, d_X, d_Y);
+        pushCrate(check_X, check_Y, d_X, d_Y);
+      //Trigger a loiter
+        loiter();
         return false;
     }
 }
@@ -123,6 +158,9 @@ void Entity::move ()
             targ_Y = pos_Y;
         }
     } else {
+        if (attack_timeout) {
+            lashOut();
+        }
         frame = 0;
     }
 }

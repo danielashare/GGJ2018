@@ -1,4 +1,4 @@
-
+#include "sound.cpp"
 
 #define E_VILLAGER 0
 #define E_ZOMBIE   1
@@ -114,6 +114,12 @@ void Entity::lashOut ()
 
 void Entity::harm (uint8_t damage)
 {
+    if(type == E_VILLAGER)
+    {
+      playSound(2, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+    } else if (type == E_ZOMBIE) {
+      playSound(3, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
+    }
     health_score -= damage;
     if (health_score < 0) {
         if (type == E_VILLAGER) {
@@ -246,11 +252,13 @@ void Entity::shoot (Entity* victim)
   double dir_X, dir_Y;
   targToVec(this->pos_X, this->pos_Y, victim->pos_X, victim->pos_Y, dir_X, dir_Y);
   float dir_ang = vecToAng(dir_X, dir_Y);
+  playSound(0, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, dir_ang, this));
 }
 
 void Entity::shootDir ()
 {
+  playSound(0, 1, this->pos_X, this->pos_Y, entity[1]->pos_X, entity[1]->pos_Y);
   projectile.push_back(new Projectile(this->pos_X, this->pos_Y, this->rot, this));
 }
 

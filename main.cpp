@@ -50,6 +50,24 @@ int main ()
     if (!zombieTexImg.loadFromFile("Assets/zombie.png")) {
         std::cout << "Couldn't load Assets/zombie.png" << std::endl;
     }
+
+    // Array of sounds to load
+    std::vector<std::string> sounds = {"gun_shot.ogg", "natureshort.wav", "women_hurt.ogg", "zombieyell.ogg"};
+
+    //Init soundBuffer
+    for (uint a = 0; a < 5; ++a) {
+        soundBuffer.push_back(new sf::SoundBuffer);
+        if (!soundBuffer[a]->loadFromFile("Assets/" + sounds[a])) {
+            std::cout << "ERR: Couldn't load sound: audio/" + std::to_string(a) << std::endl;
+        }
+    }
+    //Init the channels
+    for (uint c = 0; c < SOUNDCHANNELS; ++c) {
+        soundChannel.push_back(new sf::Sound);
+    }
+
+
+
     txt_float.setFont(fnt_arial);
     txt_float.setCharacterSize(12);
     txt_HUD.setFont(fnt_arial);
@@ -106,6 +124,9 @@ int main ()
         prot->pos_X = ri(0, MAP_W);
         prot->pos_Y = ri(0, MAP_H);
     } while (getBiome(prot->pos_X, prot->pos_Y) != B_STONE || getSprite(prot->pos_X, prot->pos_Y));
+
+    // Start background sound
+    playSound(1, 1, 0, 0, prot->pos_X, prot->pos_Y);
 
     uint64_t prev_shot = 0;
   //Start game-loop

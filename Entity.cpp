@@ -10,6 +10,7 @@ const uint8_t ATTACK_DISTANCE = 8;
 const uint8_t MAX_HEALTH = 255;
 const float NORMAL_SPEED = .02, ATTACK_SPEED = .1;
 const uint8_t PROJECTILE_DAMAGE = 32;
+const uint8_t REWARD_HEALTH = 32;
 
 class Entity;
 std::vector<Entity*> entity = std::vector<Entity*>();
@@ -55,6 +56,7 @@ class Entity {
     void animate ();
     void shoot(Entity*);
     void shootDir();
+    void reward();
 
   private:
       void loiter ();
@@ -81,6 +83,18 @@ void Entity::attack (Entity* who)
     target->targetted_at = game_time;
     speed = ATTACK_SPEED;
     attack_timeout = 4;
+}
+
+Entity::reward()
+{
+  if(this->health_score + REWARD_HEALTH > MAX_HEALTH)
+  {
+    this->health_score = MAX_HEALTH;
+  }
+  else
+  {
+    this->health_score += REWARD_HEALTH;
+  }
 }
 
 void Entity::lashOut ()
@@ -263,7 +277,7 @@ void Projectile::move() {
     if (uint16_t(here->pos_X) == uint16_t(pos_X) && uint16_t(here->pos_Y) == uint16_t(pos_Y)) {
       had_Hit = true;
       here->harm(PROJECTILE_DAMAGE);
-      //shooter->reward();
+      shooter->reward();
     }
   }
 }
